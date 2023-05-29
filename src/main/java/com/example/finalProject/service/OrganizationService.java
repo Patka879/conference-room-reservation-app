@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrganizationService {
@@ -15,5 +16,28 @@ public class OrganizationService {
 
     public List<Organization> listOrganizations() {
         return organizationRepository.findAll();
+    }
+
+    public Optional<Organization> getOrganizationById(long id) {
+        return organizationRepository.findById(id);
+    }
+
+    public void deleteCat(long id) {
+        organizationRepository.deleteById(id);
+    }
+
+    public void addOrganization(Organization organization) {
+        if (!getOrganizationById(organization.getId()).isPresent()) {
+            organizationRepository.save(organization);
+        }
+        else throw new IllegalArgumentException("Organization " + organization.getId() + " already exists");
+    }
+
+    public void replaceOrganization(long id, Organization newOrganization) {
+        if(organizationRepository.existsById(id)) {
+            newOrganization.setId(id);
+            organizationRepository.save(newOrganization);
+        }
+        else throw new IllegalArgumentException("Organization doesn't exists with id: " + id);
     }
 }
