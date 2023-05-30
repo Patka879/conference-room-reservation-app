@@ -22,7 +22,7 @@ public class OrganizationService {
         return organizationRepository.findById(id);
     }
 
-    public void deleteCat(long id) {
+    public void deleteOrganization(long id) {
         organizationRepository.deleteById(id);
     }
 

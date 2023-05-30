@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/organization")
+@CrossOrigin(origins="http://localhost:4200")
 public class OrganizationController {
 
     @Autowired
@@ -28,13 +29,13 @@ public class OrganizationController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/new")
-    public void addCat(@RequestBody Organization organization) {
+    public void addOrganization(@RequestBody Organization organization) {
         organizationService.addOrganization(organization);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteCat(@PathVariable long id) {
-        organizationService.deleteCat(id);
+    public void deleteOrganization(@PathVariable long id) {
+        organizationService.deleteOrganization(id);
     }
 
     @PatchMapping("/{id}/replace")
