@@ -38,7 +38,7 @@ public class OrganizationController {
         organizationService.deleteOrganization(id);
     }
 
-    @PatchMapping("/{id}/replace")
+    @PatchMapping("/replace/{id}")
     public void replaceOrganization(@PathVariable long id, @RequestBody Organization newOrganization) {
         organizationService.replaceOrganization(id, newOrganization);
     }
