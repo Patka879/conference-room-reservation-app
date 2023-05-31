@@ -31,10 +31,12 @@ public class OrganizationService {
     }
 
     public void addOrganization(Organization organization) {
-        if (!getOrganizationById(organization.getId()).isPresent()) {
-            organizationRepository.save(organization);
+        List<Organization> existingOrganizations = getOrganizationByName(organization.getName());
+        if (!existingOrganizations.isEmpty()) {
+            String errorMessage = "Organization with the name '" + organization.getName() + "' already exists";
+            throw new IllegalArgumentException(errorMessage);
         }
-        else throw new IllegalArgumentException("Organization " + organization.getId() + " already exists");
+        organizationRepository.save(organization);
     }
 
     public void replaceOrganization(long id, Organization newOrganization) {
