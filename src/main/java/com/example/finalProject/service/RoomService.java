@@ -1,5 +1,6 @@
 package com.example.finalProject.service;
 
+import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,21 @@ public class RoomService {
         return roomRepository.findById(id);
     }
 
+    public List<Room> getRoomByName(String name) {
+        return roomRepository.findByName(name);
+    }
+
     public void deleteRoom(long id) {
         roomRepository.deleteById(id);
     }
 
     public void addRoom(Room room) {
-        if (!getRoomById(room.getId()).isPresent()) {
-            roomRepository.save(room);
+        List<Room> existingRooms = getRoomByName(room.getName());
+        if (!existingRooms.isEmpty()) {
+            String errorMessage = "Room with the name '" + room.getName() + "' already exists";
+            throw new IllegalArgumentException(errorMessage);
         }
-        else throw new IllegalArgumentException("Room " + room.getId() + " already exists");
+        roomRepository.save(room);
     }
 
     public void replaceRoom(long id, Room newRoom) {

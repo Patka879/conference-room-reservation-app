@@ -14,6 +14,7 @@ public class Room {
 
     @NotBlank
     @Size(min = 2, max = 20)
+    @Column(unique = true)
     private String name;
 
     private double identifier;
