@@ -2,6 +2,8 @@ package com.example.finalProject.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -12,17 +14,24 @@ public class Room {
     @Column(columnDefinition = "serial")
     private long id;
 
-    @NotBlank
+    @NotBlank(message = "Conference room name is required")
     @Size(min = 2, max = 20)
     @Column(unique = true)
     private String name;
 
-    private double identifier;
+    @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Identifier format is invalid")
+    private String identifier;
+    @NotNull(message = "Level is required")
     private int level;
 
+    @NotNull(message = "Availability is required")
     private boolean availability;
 
-    private int numberOfPlaces;
+    @NotNull(message = "Number of sitting places is required")
+        private Integer numberOfSittingPlaces;
+
+    @NotNull(message = "Number of standing places is required")
+    private Integer numberOfStandingPlaces;
 
     public Room() {
     }
@@ -43,14 +52,6 @@ public class Room {
         this.name = name;
     }
 
-    public double getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(double identifier) {
-        this.identifier = identifier;
-    }
-
     public int getLevel() {
         return level;
     }
@@ -67,20 +68,37 @@ public class Room {
         this.availability = availability;
     }
 
-    public int getNumberOfPlaces() {
-        return numberOfPlaces;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
-    public void setNumberOfPlaces(int numberOfPlaces) {
-        this.numberOfPlaces = numberOfPlaces;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public Room(long id, String name, double identifier, int level, boolean availability, int numberOfPlaces) {
+    public Integer getNumberOfSittingPlaces() {
+        return numberOfSittingPlaces;
+    }
+
+    public void setNumberOfSittingPlaces(Integer numberOfSittingPlaces) {
+        this.numberOfSittingPlaces = numberOfSittingPlaces;
+    }
+
+    public Integer getNumberOfStandingPlaces() {
+        return numberOfStandingPlaces;
+    }
+
+    public void setNumberOfStandingPlaces(Integer numberOfStandingPlaces) {
+        this.numberOfStandingPlaces = numberOfStandingPlaces;
+    }
+
+    public Room(long id, String name, String identifier, int level, boolean availability, Integer numberOfSittingPlaces, Integer numberOfStandingPlaces) {
         this.id = id;
         this.name = name;
         this.identifier = identifier;
         this.level = level;
         this.availability = availability;
-        this.numberOfPlaces = numberOfPlaces;
+        this.numberOfSittingPlaces = numberOfSittingPlaces;
+        this.numberOfStandingPlaces = numberOfStandingPlaces;
     }
 }
