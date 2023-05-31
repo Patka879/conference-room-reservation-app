@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 @Entity
 @Table(name="organization")
 public class Organization {
@@ -18,12 +20,23 @@ public class Organization {
     @Column(unique = true)
     private String name;
 
+    @OneToMany(mappedBy = "organization")
+    List<Room> rooms;
+
     public Organization() {
     }
 
     public Organization(long id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(List<Room> rooms) {
+        this.rooms = rooms;
     }
 
     public long getId() {

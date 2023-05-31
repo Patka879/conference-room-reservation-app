@@ -1,8 +1,11 @@
 package com.example.finalProject.service;
 
 import com.example.finalProject.model.Organization;
+import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.OrganizationRepository;
+import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +16,8 @@ public class OrganizationService {
 
     @Autowired
     OrganizationRepository organizationRepository;
+    @Autowired
+    RoomRepository roomRepository;
 
     public List<Organization> listOrganizations() {
         return organizationRepository.findAll();
@@ -45,5 +50,21 @@ public class OrganizationService {
             organizationRepository.save(newOrganization);
         }
         else throw new IllegalArgumentException("Organization doesn't exists with id: " + id);
+    }
+
+    public void addRoomToOrganization(long organizationId, long roomId) {
+        Optional<Organization> organizationOptional = organizationRepository.findById(organizationId);
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
+
+        if (organizationOptional.isPresent() && roomOptional.isPresent()) {
+            Organization organization = organizationOptional.get();
+            Room room = roomOptional.get();
+            room.setOrganization(organization);
+            organization.getRooms().add(room);
+            roomRepository.save(room);
+            organizationRepository.save(organization);
+        } else {
+            throw new IllegalArgumentException("Organization or Room not found");
+        }
     }
 }

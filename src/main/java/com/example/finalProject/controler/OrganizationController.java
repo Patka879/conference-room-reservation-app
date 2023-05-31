@@ -47,4 +47,9 @@ public class OrganizationController {
     public void replaceOrganization(@PathVariable long id, @RequestBody Organization newOrganization) {
         organizationService.replaceOrganization(id, newOrganization);
     }
+
+    @PatchMapping("/{organizationId}/add-room/{roomId}")
+    public void addRoomToOrganization(@PathVariable(name = "organizationId") long organizationId, @PathVariable(name = "roomId") long roomId) {
+        organizationService.addRoomToOrganization(organizationId, roomId);
+    }
 }
