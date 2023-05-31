@@ -28,6 +28,11 @@ public class RoomController {
         return roomService.getRoomById(id);
     }
 
+    @GetMapping("/named/{name}")
+    public List<Room> getRoomByName(@PathVariable String name) {
+        return roomService.getRoomByName(name);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/new")
     public void addRoom(@RequestBody Room room) {

@@ -15,7 +15,7 @@ public class Organization {
     @Column(columnDefinition = "serial")
     private long id;
 
-    @NotBlank
+    @NotBlank(message = "Conference room name is required")
     @Size(min = 2, max = 20)
     @Column(unique = true)
     private String name;
