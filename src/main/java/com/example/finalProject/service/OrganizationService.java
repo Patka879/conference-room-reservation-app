@@ -26,6 +26,10 @@ public class OrganizationService {
         organizationRepository.deleteById(id);
     }
 
+    public List<Organization> getOrganizationByName(String name) {
+        return organizationRepository.findByName(name);
+    }
+
     public void addOrganization(Organization organization) {
         if (!getOrganizationById(organization.getId()).isPresent()) {
             organizationRepository.save(organization);
