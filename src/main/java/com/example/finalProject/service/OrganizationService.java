@@ -36,11 +36,15 @@ public class OrganizationService {
     }
 
     public void addOrganization(Organization organization) {
-        List<Organization> existingOrganizations = getOrganizationByName(organization.getName());
+        String organizationName = organization.getName().toLowerCase();
+
+        List<Organization> existingOrganizations = getOrganizationByName(organizationName);
         if (!existingOrganizations.isEmpty()) {
             String errorMessage = "Organization with the name '" + organization.getName() + "' already exists";
             throw new IllegalArgumentException(errorMessage);
         }
+
+        organization.setName(organizationName);
         organizationRepository.save(organization);
     }
 

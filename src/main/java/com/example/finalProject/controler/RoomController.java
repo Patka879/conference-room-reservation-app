@@ -1,10 +1,12 @@
 package com.example.finalProject.controler;
 
 
+import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Room;
 import com.example.finalProject.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;  

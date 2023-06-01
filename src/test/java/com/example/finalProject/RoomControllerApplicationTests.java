@@ -109,6 +109,27 @@ public class RoomControllerApplicationTests {
         verify(roomRepository, never()).save(existingRoom);
     }
 
+    @Test
+    public void addRoomShouldThrowExceptionWhenAddingExistingRoomButDifferentCase() {
+        // Given
+        Room existingRoom = new Room();
+        existingRoom.setName("Room1");
+
+        when(roomRepository.findByName("room1")).thenReturn(Arrays.asList(existingRoom));
+
+        Room newRoom = new Room();
+        newRoom.setName("room1");
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            roomService.addRoom(newRoom);
+        });
+
+        assertEquals("Room with the name 'room1' already exists", exception.getMessage());
+        verify(roomRepository, never()).save(newRoom);
+    }
+
+
 
     @Test
     void replaceRoomShouldReplaceRoom() {

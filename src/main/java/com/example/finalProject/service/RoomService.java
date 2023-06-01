@@ -32,11 +32,14 @@ public class RoomService {
     }
 
     public void addRoom(Room room) {
-        List<Room> existingRooms = getRoomByName(room.getName());
+        String roomName = room.getName().toLowerCase();
+
+        List<Room> existingRooms = getRoomByName(roomName);
         if (!existingRooms.isEmpty()) {
             String errorMessage = "Room with the name '" + room.getName() + "' already exists";
             throw new IllegalArgumentException(errorMessage);
         }
+        room.setName(roomName);
         roomRepository.save(room);
     }
 

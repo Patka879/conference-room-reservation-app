@@ -111,6 +111,27 @@ public class OrganizationControllerTest {
         verify(organizationRepository, never()).save(existingOrganization);
     }
 
+    @Test
+    void addOrganizationShouldThrowExceptionWhenAddingExistingOrganizationWithDifferentCase() {
+        // Given
+        Organization existingOrganization = new Organization();
+        existingOrganization.setName("Org1");
+
+        when(organizationRepository.findByName("org1")).thenReturn(Arrays.asList(existingOrganization));
+
+        Organization newOrganization = new Organization();
+        newOrganization.setName("org1");
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.addOrganization(newOrganization);
+        });
+
+        assertEquals("Organization with the name 'org1' already exists", exception.getMessage());
+        verify(organizationRepository, never()).save(newOrganization);
+    }
+
+
 
     @Test
     void replaceOrganizationShouldReplaceOrganization() {
