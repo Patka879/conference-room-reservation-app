@@ -1,20 +1,20 @@
 package com.example.finalProject;
 
 import com.example.finalProject.model.Organization;
+import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.OrganizationRepository;
+import com.example.finalProject.repository.RoomRepository;
 import com.example.finalProject.service.OrganizationService;
+import com.example.finalProject.service.RoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class OrganizationControllerTest {
@@ -24,6 +24,7 @@ public class OrganizationControllerTest {
 
     @InjectMocks
     private OrganizationService organizationService;
+
 
     @BeforeEach
     void setup() {
@@ -49,7 +50,7 @@ public class OrganizationControllerTest {
     }
 
     @Test
-    void getOrganizationById_ExistingId_ShouldReturnOrganization() {
+    void getOrganizationByIdShouldReturnOrganization() {
         // Given
         long id = 1;
         Organization org = new Organization(id, "Org1");
@@ -64,7 +65,7 @@ public class OrganizationControllerTest {
     }
 
     @Test
-    void getOrganizationById_NonExistingId_ShouldReturnEmptyOptional() {
+    void getOrganizationByIdShouldReturnEmptyOptionalWhenIdDoesntExists() {
         // Given
         long id = 1;
 
@@ -78,37 +79,41 @@ public class OrganizationControllerTest {
     }
 
     @Test
-    void addOrganization_NewOrganization_ShouldSaveOrganization() {
+    void addOrganizationShouldSaveOrganization() {
         // Given
         long id = 1;
         Organization org = new Organization(id, "Org1");
 
-        when(organizationRepository.findById(id)).thenReturn(Optional.empty());
+        when(organizationRepository.findByName("Org1")).thenReturn(Collections.emptyList());
 
         // When
         organizationService.addOrganization(org);
 
         // Then
-        verify(organizationRepository, times(1)).findById(id);
+        verify(organizationRepository, never()).findById(id);
         verify(organizationRepository, times(1)).save(org);
     }
 
     @Test
-    void addOrganization_ExistingOrganization_ShouldThrowException() {
+    public void addOrganizationShouldThrowExceptionWhenAddingExistingOrganization() {
         // Given
-        long id = 1;
-        Organization org = new Organization(id, "Org1");
+        Organization existingOrganization = new Organization();
+        existingOrganization.setName("Org1");
 
-        when(organizationRepository.findById(id)).thenReturn(Optional.of(org));
+        when(organizationRepository.findByName("Org1")).thenReturn(Arrays.asList(existingOrganization));
 
         // When/Then
-        assertThrows(IllegalArgumentException.class, () -> organizationService.addOrganization(org));
-        verify(organizationRepository, times(1)).findById(id);
-        verify(organizationRepository, never()).save(org);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.addOrganization(existingOrganization);
+        });
+
+        assertEquals("Organization with the name 'Org1' already exists", exception.getMessage());
+        verify(organizationRepository, never()).save(existingOrganization);
     }
 
+
     @Test
-    void replaceOrganization_ExistingId_ShouldReplaceOrganization() {
+    void replaceOrganizationShouldReplaceOrganization() {
         // Given
         long id = 1;
         Organization existingOrg = new Organization(id, "Org1");
@@ -126,7 +131,7 @@ public class OrganizationControllerTest {
     }
 
     @Test
-    void replaceOrganization_NonExistingId_ShouldThrowException() {
+    void replaceOrganizationShouldThrowExceptionWhenIdDoestExists() {
         // Given
         long id = 1;
         Organization newOrg = new Organization(id, "Updated Org1");
@@ -138,4 +143,5 @@ public class OrganizationControllerTest {
         verify(organizationRepository, times(1)).existsById(id);
         verify(organizationRepository, never()).save(newOrg);
     }
+
 }

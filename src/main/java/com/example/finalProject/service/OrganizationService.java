@@ -52,19 +52,19 @@ public class OrganizationService {
         else throw new IllegalArgumentException("Organization doesn't exists with id: " + id);
     }
 
-    public void addRoomToOrganization(long organizationId, long roomId) {
-        Optional<Organization> organizationOptional = organizationRepository.findById(organizationId);
-        Optional<Room> roomOptional = roomRepository.findById(roomId);
+        public void addRoomToOrganization(long organizationId, long roomId) {
+            Optional<Organization> organizationOptional = organizationRepository.findById(organizationId);
+            Optional<Room> roomOptional = roomRepository.findById(roomId);
 
-        if (organizationOptional.isPresent() && roomOptional.isPresent()) {
-            Organization organization = organizationOptional.get();
-            Room room = roomOptional.get();
-            room.setOrganization(organization);
-            organization.getRooms().add(room);
-            roomRepository.save(room);
-            organizationRepository.save(organization);
-        } else {
-            throw new IllegalArgumentException("Organization or Room not found");
-        }
+            if (organizationOptional.isPresent() && roomOptional.isPresent()) {
+                Organization organization = organizationOptional.get();
+                Room room = roomOptional.get();
+                room.setOrganization(organization);
+                organization.getRooms().add(room);
+                roomRepository.save(room);
+                organizationRepository.save(organization);
+            } else {
+                throw new IllegalArgumentException("Organization or Room not found");
+            }
     }
 }
