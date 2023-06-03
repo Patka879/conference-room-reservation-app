@@ -20,9 +20,11 @@ public class Reservation {
     private String identifier;
 
     @NotNull(message = "Organization is required")
+    @OneToOne
     private Organization organization;
 
     @NotNull(message = "Room is required")
+    @OneToOne
     private Room room;
 
     @NotNull(message = "Date is required")

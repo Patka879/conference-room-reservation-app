@@ -38,36 +38,20 @@ public class ReservationService {
         List<Reservation> existingReservations = getReservationByIdentifier(reservationIdentifier);
 
         if (!existingReservations.isEmpty()) {
-            String errorMessage = "Reservation with the identifier " + reservation.getIdentifier() + "' already exists";
+            String errorMessage = "Reservation with the identifier " + reservation.getIdentifier() + " already exists";
             throw new IllegalArgumentException(errorMessage);
         }
 
         reservation.setIdentifier(reservationIdentifier);
         reservationRepository.save(reservation);
     }
+
+
+    public void replaceReservation(long id, Reservation newReservation) {
+        if (reservationRepository.existsById(id)) {
+            newReservation.setId(id);
+            reservationRepository.save(newReservation);
+        } else throw new IllegalArgumentException("Reservation doesn't exists with id: " + id);
+    }
 }
 
-//        public void replaceOrganization(long id, Organization newOrganization) {
-//            if(organizationRepository.existsById(id)) {
-//                newOrganization.setId(id);
-//                organizationRepository.save(newOrganization);
-//            }
-//            else throw new IllegalArgumentException("Organization doesn't exists with id: " + id);
-//        }
-//
-//        public void addRoomToOrganization(long organizationId, long roomId) {
-//            Optional<Organization> organizationOptional = organizationRepository.findById(organizationId);
-//            Optional<Room> roomOptional = roomRepository.findById(roomId);
-//
-//            if (organizationOptional.isPresent() && roomOptional.isPresent()) {
-//                Organization organization = organizationOptional.get();
-//                Room room = roomOptional.get();
-//                room.setOrganization(organization);
-//                organization.getRooms().add(room);
-//                roomRepository.save(room);
-//                organizationRepository.save(organization);
-//            } else {
-//                throw new IllegalArgumentException("Organization or Room not found");
-//            }
-//        }
-//}

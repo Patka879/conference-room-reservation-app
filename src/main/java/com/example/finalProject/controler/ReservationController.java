@@ -36,4 +36,9 @@ public class ReservationController {
     public void addOrganization(@RequestBody Reservation reservation) {
         reservationService.addReservation(reservation);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteReservation(@PathVariable long id) {
+        reservationService.deleteReservation(id);
+    }
 }
