@@ -22,7 +22,7 @@ public class Organization {
     private String name;
 
     @OneToMany(mappedBy = "organization")
-    List<Room> rooms;
+    private List<Room> rooms;
 
     @JsonIgnoreProperties("organization")
     @OneToMany(mappedBy = "organization")
@@ -44,7 +44,13 @@ public class Organization {
         this.rooms = rooms;
     }
 
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
 
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
 
     public long getId() {
         return id;
@@ -61,4 +67,5 @@ public class Organization {
     public void setName(String name) {
         this.name = name;
     }
+
 }
