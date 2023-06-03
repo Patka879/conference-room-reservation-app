@@ -1,5 +1,8 @@
 package com.example.finalProject.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
@@ -16,11 +19,11 @@ public class Reservation {
 
     @NotBlank(message = "Reservation identifier is required")
     @Size(min = 2, max = 20)
-    @Column(unique = true)
     private String identifier;
 
-    @NotNull(message = "Organization is required")
-    @OneToOne
+    @JsonIgnoreProperties("reservations")
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "organization_identifier", columnDefinition = "integer")
     private Organization organization;
 
     @NotNull(message = "Room is required")

@@ -52,4 +52,9 @@ public class OrganizationController {
     public void addRoomToOrganization(@PathVariable(name = "organizationId") long organizationId, @PathVariable(name = "roomId") long roomId) {
         organizationService.addRoomToOrganization(organizationId, roomId);
     }
+
+    @PostMapping("/{organizationId}/remove-room/{roomId}")
+    public void removeRoomFromOrganization(@PathVariable(name = "organizationId") long organizationId, @PathVariable(name = "roomId") long roomId) {
+        organizationService.removeRoomFromOrganization(organizationId, roomId);
+    }
 }
