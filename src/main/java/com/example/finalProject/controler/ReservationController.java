@@ -1,5 +1,6 @@
 package com.example.finalProject.controler;
 
+import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
 import com.example.finalProject.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +27,26 @@ public class ReservationController {
         return reservationService.getReservationById(id);
     }
 
-    @GetMapping("/named/{name}")
+    @GetMapping("/named/{identifier}")
     public List<Reservation> getReservationByIdentifier(@PathVariable String identifier) {
         return reservationService.getReservationByIdentifier(identifier);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/new")
-    public void addOrganization(@RequestBody Reservation reservation) {
-        reservationService.addReservation(reservation);
+    @PostMapping("/new/{organizationId}/{roomId}")
+    public void addReservation(@RequestBody Reservation reservation,
+                               @PathVariable long organizationId,
+                               @PathVariable long roomId) {
+        reservationService.addReservation(reservation, organizationId, roomId);
     }
+
+    @PatchMapping("/replace/{id}")
+    public void replaceReservation(@PathVariable long id, @RequestBody Reservation newReservation) {
+        reservationService.replaceReservation(id, newReservation);
+    }
+    @DeleteMapping("/delete/{id}")
+    public void deleteReservation(@PathVariable long id) {
+        reservationService.deleteReservation(id);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.example.finalProject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,11 +19,14 @@ public class Organization {
 
     @NotBlank(message = "Conference room name is required")
     @Size(min = 2, max = 20)
-    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "organization")
-    List<Room> rooms;
+    private List<Room> rooms;
+
+    @JsonIgnoreProperties("organization")
+    @OneToMany(mappedBy = "organization")
+    private List<Reservation> reservations;
 
     public Organization() {
     }
@@ -39,6 +44,14 @@ public class Organization {
         this.rooms = rooms;
     }
 
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
     public long getId() {
         return id;
     }
@@ -54,4 +67,5 @@ public class Organization {
     public void setName(String name) {
         this.name = name;
     }
+
 }

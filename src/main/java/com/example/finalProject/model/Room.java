@@ -17,7 +17,6 @@ public class Room {
 
     @NotBlank(message = "Conference room name is required")
     @Size(min = 2, max = 20)
-    @Column(unique = true)
     private String name;
 
     @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Identifier format is invalid")
