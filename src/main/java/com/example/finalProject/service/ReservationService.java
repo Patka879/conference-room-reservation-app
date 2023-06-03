@@ -75,7 +75,6 @@ public class ReservationService {
         reservation.setOrganization(organization);
         reservation.setRoom(room);
 
-        organization.getReservations().add(reservation);
 
         reservationRepository.save(reservation);
     }

@@ -19,7 +19,7 @@ public class Reservation {
     @Size(min = 2, max = 20)
     private String identifier;
 
-    @JsonIgnoreProperties("reservations")
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "organization_identifier", columnDefinition = "integer")
     private Organization organization;

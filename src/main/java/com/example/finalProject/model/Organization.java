@@ -24,7 +24,6 @@ public class Organization {
     @OneToMany(mappedBy = "organization")
     private List<Room> rooms;
 
-    @JsonIgnoreProperties("organization")
     @OneToMany(mappedBy = "organization")
     private List<Reservation> reservations;
 
