@@ -6,6 +6,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.Range;
+
+import java.util.List;
 
 @Entity
 @Table(name="room")
@@ -22,24 +25,38 @@ public class Room {
     @Pattern(regexp = "^\\d+(\\.\\d+)?$", message = "Identifier format is invalid")
     private String identifier;
     @NotNull(message = "Level is required")
+    @Range(min = 0, max = 10, message = "Level must be between 0 and 10")
     private int level;
 
     @NotNull(message = "Availability is required")
     private boolean availability;
 
     @NotNull(message = "Number of sitting places is required")
-        private Integer numberOfSittingPlaces;
+    private Integer numberOfSittingPlaces;
 
     @NotNull(message = "Number of standing places is required")
     private Integer numberOfStandingPlaces;
 
-    @JsonIgnore
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+//    @JsonIgnore
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "organization_id", columnDefinition = "integer")
-    private Organization organization;
+    public Organization organization;
+
+    @OneToMany(mappedBy = "room")
+    private List<Reservation> reservations;
 
 
     public Room() {
+    }
+
+    public Room(long id, String name, String identifier, int level, boolean availability, Integer numberOfSittingPlaces, Integer numberOfStandingPlaces) {
+        this.id = id;
+        this.name = name;
+        this.identifier = identifier;
+        this.level = level;
+        this.availability = availability;
+        this.numberOfSittingPlaces = numberOfSittingPlaces;
+        this.numberOfStandingPlaces = numberOfStandingPlaces;
     }
 
     public Organization getOrganization() {
@@ -74,7 +91,7 @@ public class Room {
         this.level = level;
     }
 
-    public boolean isAvailability() {
+    public boolean getAvailability() {
         return availability;
     }
 
@@ -106,13 +123,11 @@ public class Room {
         this.numberOfStandingPlaces = numberOfStandingPlaces;
     }
 
-    public Room(long id, String name, String identifier, int level, boolean availability, Integer numberOfSittingPlaces, Integer numberOfStandingPlaces) {
-        this.id = id;
-        this.name = name;
-        this.identifier = identifier;
-        this.level = level;
-        this.availability = availability;
-        this.numberOfSittingPlaces = numberOfSittingPlaces;
-        this.numberOfStandingPlaces = numberOfStandingPlaces;
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }

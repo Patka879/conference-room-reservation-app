@@ -1,28 +1,26 @@
 package com.example.finalProject.controler;
 
-
-import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Room;
+import com.example.finalProject.model.RoomDTO;
 import com.example.finalProject.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;  
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
-@CrossOrigin(origins="http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4201")
 public class RoomController {
 
     @Autowired
     RoomService roomService;
 
     @GetMapping("/all")
-    public List<Room> listRooms() {
-        return roomService.listRoom();
+    public List<RoomDTO> listRooms() {
+        return roomService.listRooms();
     }
 
     @GetMapping("/{id}")
@@ -50,4 +48,5 @@ public class RoomController {
     public void replaceRoom(@PathVariable long id, @RequestBody Room newRoom) {
         roomService.replaceRoom(id, newRoom);
     }
+
 }

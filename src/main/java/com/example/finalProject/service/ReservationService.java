@@ -2,6 +2,7 @@ package com.example.finalProject.service;
 
 import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
+import com.example.finalProject.model.ReservationDTO;
 import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.OrganizationRepository;
 import com.example.finalProject.repository.ReservationRepository;
@@ -9,6 +10,9 @@ import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,8 +29,26 @@ public class ReservationService {
     OrganizationRepository organizationRepository;
 
 
-    public List<Reservation> listReservations() {
-        return reservationRepository.findAll();
+    public ReservationDTO convertToDTO(Reservation reservation) {
+        ReservationDTO reservationDTO = new ReservationDTO();
+        reservationDTO.setId(reservation.getId());
+        reservationDTO.setIdentifier(reservation.getIdentifier());
+        reservationDTO.setDate(reservation.getDate());
+        reservationDTO.setStartTime(reservation.getStartTime());
+        reservationDTO.setEndTime(reservation.getEndTime());
+        reservationDTO.setRoomName(reservation.getRoom().getName());
+        reservationDTO.setOrganizationName(reservation.getOrganization().getName());
+        return reservationDTO;
+    }
+
+    public List<ReservationDTO> listReservations() {
+        List<Reservation> allReservations = reservationRepository.findAll();
+        List<ReservationDTO> processedReservations = new ArrayList<>();
+        for (Reservation reservation : allReservations) {
+            ReservationDTO reservationDTO = convertToDTO(reservation);
+            processedReservations.add(reservationDTO);
+        }
+        return processedReservations;
     }
 
     public Optional<Reservation> getReservationById(long id) {
@@ -39,6 +61,10 @@ public class ReservationService {
 
     public List<Reservation> getReservationByIdentifier(String identifier) {
         return reservationRepository.findByIdentifier(identifier);
+    }
+
+    public List<Reservation> getReservationInOrganization(Long id) {
+        return reservationRepository.findByOrganizationId(id);
     }
 
     public void addReservation(Reservation reservation, long organizationId, long roomId) {
@@ -62,7 +88,7 @@ public class ReservationService {
                 .anyMatch(room -> room.getId() == roomId);
 
         if (!isRoomAssociatedWithOrganization) {
-            throw new IllegalArgumentException("Room with id " + roomId + " is not associated with the organization");
+            throw new IllegalArgumentException("This room is not associated with organization " + organization.getName());
         }
 
         Optional<Room> roomOptional = organizationRooms.stream()
@@ -71,19 +97,87 @@ public class ReservationService {
 
         Room room = roomOptional.get();
 
+        // Check for overlapping reservations
+        List<Reservation> organizationReservations = reservationRepository.findByOrganizationId(organizationId);
+        for (Reservation existingReservation : organizationReservations) {
+            if (areReservationsOverlapping(existingReservation, reservation)) {
+                throw new IllegalArgumentException("The new reservation overlaps with an existing reservation");
+            }
+        }
+
         reservation.setIdentifier(reservationIdentifier);
         reservation.setOrganization(organization);
         reservation.setRoom(room);
 
-
         reservationRepository.save(reservation);
     }
 
+
+    private boolean areReservationsOverlapping(Reservation existingReservation, Reservation newReservation) {
+        LocalDateTime existingStart = LocalDateTime.of(existingReservation.getDate(), existingReservation.getStartTime());
+        LocalDateTime existingEnd = LocalDateTime.of(existingReservation.getDate(), existingReservation.getEndTime());
+        LocalDateTime newStart = LocalDateTime.of(newReservation.getDate(), newReservation.getStartTime());
+        LocalDateTime newEnd = LocalDateTime.of(newReservation.getDate(), newReservation.getEndTime());
+
+        return (existingStart.isBefore(newEnd) && existingEnd.isAfter(newStart)) ||
+                (newStart.isBefore(existingEnd) && newEnd.isAfter(existingStart)) ||
+                (existingStart.isEqual(newStart) && existingEnd.isEqual(newEnd));
+    }
+
     public void replaceReservation(long id, Reservation newReservation) {
-        if (reservationRepository.existsById(id)) {
-            newReservation.setId(id);
-            reservationRepository.save(newReservation);
-        } else throw new IllegalArgumentException("Reservation doesn't exists with id: " + id);
+        Optional<Reservation> existingReservationOptional = reservationRepository.findById(id);
+        if (existingReservationOptional.isEmpty()) {
+            throw new IllegalArgumentException("Reservation does not exist with id: " + id);
+        }
+
+        Reservation existingReservation = existingReservationOptional.get();
+
+        String newReservationIdentifier = newReservation.getIdentifier().toLowerCase();
+        List<Reservation> existingReservations = getReservationByIdentifier(newReservationIdentifier);
+
+        if (!existingReservations.isEmpty() && !existingReservation.getIdentifier().equalsIgnoreCase(newReservationIdentifier)) {
+            String errorMessage = "Reservation with the identifier " + newReservation.getIdentifier() + " already exists";
+            throw new IllegalArgumentException(errorMessage);
+        }
+
+        if (!isValidReservationDate(newReservation.getDate())) {
+            throw new IllegalArgumentException("Invalid reservation date. Cannot make a reservation for today, a past date, or more than two weeks in advance.");
+        }
+
+        if (!isValidIdentifierLength(newReservationIdentifier)) {
+            throw new IllegalArgumentException("Invalid identifier length. The identifier must have at least 2 characters and at most 20 characters.");
+        }
+
+        if (!isValidReservationDate(newReservation.getDate())) {
+            throw new IllegalArgumentException("Invalid reservation date. Cannot make a reservation for today, a past date, or more than two weeks in advance.");
+        }
+
+        existingReservation.setIdentifier(newReservationIdentifier);
+        existingReservation.setDate(newReservation.getDate());
+        existingReservation.setStartTime(newReservation.getStartTime());
+        existingReservation.setEndTime(newReservation.getEndTime());
+
+        reservationRepository.save(existingReservation);
+    }
+
+    private boolean isValidIdentifierLength(String identifier) {
+        int identifierLength = identifier.length();
+        return identifierLength >= 2 && identifierLength <= 20;
+    }
+
+    private boolean isValidReservationDate(LocalDate date) {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate maxAllowedDate = currentDate.plusWeeks(2);
+
+        if (date.isEqual(currentDate)) {
+            return false;
+        } else if (date.isBefore(currentDate)) {
+            return false;
+        } else if (date.isAfter(maxAllowedDate)) {
+            return false;
+        }
+
+        return true;
     }
 }
 

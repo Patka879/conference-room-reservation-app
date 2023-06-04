@@ -1,20 +1,28 @@
 package com.example.finalProject;
 
 import com.example.finalProject.model.Room;
+import com.example.finalProject.model.RoomDTO;
 import com.example.finalProject.repository.RoomRepository;
 import com.example.finalProject.service.RoomService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 public class RoomControllerApplicationTests {
 
     @Mock
@@ -23,28 +31,117 @@ public class RoomControllerApplicationTests {
     @InjectMocks
     private RoomService roomService;
 
+    private Validator validator;
+
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @Test
-    void listRoomShouldReturnAllRooms() {
-        // Given
-        Room room1 = new Room(1, "Room1", "R001", 1, true, 10, 20);
-        Room room2 = new Room(2, "Room2", "R002", 2, false, 15, 25);
-        List<Room> rooms = new ArrayList<>();
-        rooms.add(room1);
-        rooms.add(room2);
+    public void testRoomAnnotations() {
+        Room room = new Room();
+        room.setName("A");
+        room.setIdentifier("RoomRoomRoom");
+        room.setId(1);
+        room.setAvailability(true);
+        room.setLevel(12);
+        room.setNumberOfSittingPlaces(10);
+        room.setNumberOfStandingPlaces(15);
 
-        when(roomRepository.findAll()).thenReturn(rooms);
+        Set<ConstraintViolation<Room>> violations = validator.validate(room);
+
+        assertEquals(3, violations.size());
+
+        List<String> expectedMessages = Arrays.asList(
+                "wielkość musi należeć do zakresu od 2 do 20",
+                "Identifier format is invalid",
+                "Level must be between 0 and 10"
+        );
+
+        for (ConstraintViolation<Room> violation : violations) {
+            String actualMessage = violation.getMessage();
+            System.out.println("Actual violation message: " + actualMessage);
+            assertTrue(expectedMessages.contains(actualMessage));
+        }
+    }
+
+    @Test
+    void convertToDTOShouldConvertRoomToDTO() {
+        // Given
+        Room room = new Room();
+        room.setId(1);
+        room.setName("Room 1");
+        room.setIdentifier("ABC123");
+        room.setLevel(1);
+        room.setAvailability(true);
+        room.setNumberOfSittingPlaces(10);
+        room.setNumberOfStandingPlaces(20);
 
         // When
-        List<Room> result = roomService.listRoom();
+        RoomDTO result = roomService.convertToDTO(room);
 
         // Then
-        assertEquals(rooms, result);
+        assertEquals(1, result.getId());
+        assertEquals("Room 1", result.getName());
+        assertEquals("ABC123", result.getIdentifier());
+        assertEquals(1, result.getLevel());
+        assertEquals(true, result.isAvailability());
+        assertEquals(10, result.getNumberOfSittingPlaces());
+        assertEquals(20, result.getNumberOfStandingPlaces());
     }
+
+    @Test
+    void listRoomsShouldReturnListOfRoomDTOs() {
+        // Given
+        Room room1 = new Room();
+        room1.setId(1);
+        room1.setName("Room 1");
+        room1.setIdentifier("ABC123");
+        room1.setLevel(1);
+        room1.setAvailability(true);
+        room1.setNumberOfSittingPlaces(10);
+        room1.setNumberOfStandingPlaces(20);
+
+        Room room2 = new Room();
+        room2.setId(2);
+        room2.setName("Room 2");
+        room2.setIdentifier("DEF456");
+        room2.setLevel(2);
+        room2.setAvailability(false);
+        room2.setNumberOfSittingPlaces(5);
+        room2.setNumberOfStandingPlaces(15);
+
+        when(roomRepository.findAll()).thenReturn(Arrays.asList(room1, room2));
+
+        // When
+        List<RoomDTO> result = roomService.listRooms();
+
+        // Then
+        assertEquals(2, result.size());
+
+        RoomDTO dto1 = result.get(0);
+        assertEquals(1, dto1.getId());
+        assertEquals("Room 1", dto1.getName());
+        assertEquals("ABC123", dto1.getIdentifier());
+        assertEquals(1, dto1.getLevel());
+        assertEquals(true, dto1.isAvailability());
+        assertEquals(10, dto1.getNumberOfSittingPlaces());
+        assertEquals(20, dto1.getNumberOfStandingPlaces());
+
+        RoomDTO dto2 = result.get(1);
+        assertEquals(2, dto2.getId());
+        assertEquals("Room 2", dto2.getName());
+        assertEquals("DEF456", dto2.getIdentifier());
+        assertEquals(2, dto2.getLevel());
+        assertEquals(false, dto2.isAvailability());
+        assertEquals(5, dto2.getNumberOfSittingPlaces());
+        assertEquals(15, dto2.getNumberOfStandingPlaces());
+    }
+
 
     @Test
     void getRoomByIdShouldReturnRoom() {
@@ -93,7 +190,7 @@ public class RoomControllerApplicationTests {
 
 
     @Test
-    public void addRoomShouldThrowExceptionWhenAddingExistingRoom() {
+    public void addRoomShouldThrowExceptionWhenAddingRoomWithExistingName() {
         // Given
         Room existingRoom = new Room();
         existingRoom.setName("Room1");
@@ -128,6 +225,30 @@ public class RoomControllerApplicationTests {
         assertEquals("Room with the name 'room1' already exists", exception.getMessage());
         verify(roomRepository, never()).save(newRoom);
     }
+
+    @Test
+    public void addRoomShouldThrowExceptionWhenAddingExistingRoomWithIdentifier() {
+        // Given
+        Room existingRoom = new Room();
+        existingRoom.setName("Room1");
+        existingRoom.setIdentifier("R001");
+
+        when(roomRepository.findByName("Room1")).thenReturn(Collections.emptyList());
+        when(roomRepository.findByIdentifier("R001")).thenReturn(Arrays.asList(existingRoom));
+
+        Room newRoom = new Room();
+        newRoom.setName("New Room");
+        newRoom.setIdentifier("R001");
+
+        // When/Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            roomService.addRoom(newRoom);
+        });
+
+        assertEquals("Room with the identifier 'R001' already exists", exception.getMessage());
+        verify(roomRepository, never()).save(newRoom);
+    }
+
 
 
 

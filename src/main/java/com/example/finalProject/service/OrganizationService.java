@@ -1,13 +1,13 @@
 package com.example.finalProject.service;
 
-import com.example.finalProject.model.Organization;
-import com.example.finalProject.model.Room;
+import com.example.finalProject.model.*;
 import com.example.finalProject.repository.OrganizationRepository;
 import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +19,32 @@ public class OrganizationService {
     @Autowired
     RoomRepository roomRepository;
 
-    public List<Organization> listOrganizations() {
-        return organizationRepository.findAll();
+    public OrganizationDTO convertToDTO(Organization organization) {
+        OrganizationDTO organizationDTO = new OrganizationDTO();
+        organizationDTO.setId(organization.getId());
+        organizationDTO.setName(organization.getName());
+
+
+        List<String> roomNames = new ArrayList<>();
+        List<Room> rooms = organization.getRooms();
+        if (rooms != null) {
+            for (Room room : rooms) {
+                roomNames.add(room.getName());
+            }
+        }
+        organizationDTO.setRoomNames(roomNames);
+
+        return organizationDTO;
+    }
+
+    public List<OrganizationDTO> listOrganizations() {
+        List<Organization> allOrganizations = organizationRepository.findAll();
+        List<OrganizationDTO> processedReservations = new ArrayList<>();
+        for (Organization organization : allOrganizations) {
+            OrganizationDTO organizationDTO = convertToDTO(organization);
+            processedReservations.add(organizationDTO);
+        }
+        return processedReservations;
     }
 
     public Optional<Organization> getOrganizationById(long id) {
@@ -63,8 +87,19 @@ public class OrganizationService {
         if (organizationOptional.isPresent() && roomOptional.isPresent()) {
             Organization organization = organizationOptional.get();
             Room room = roomOptional.get();
+
+            if (!room.getAvailability()) {
+                throw new IllegalArgumentException("This room is already added to a different organization");
+            }
+
             room.setOrganization(organization);
+            room.setAvailability(false);
+
+            if (organization.getRooms() == null) {
+                organization.setRooms(new ArrayList<>());
+            }
             organization.getRooms().add(room);
+
             roomRepository.save(room);
             organizationRepository.save(organization);
         } else {
@@ -72,24 +107,30 @@ public class OrganizationService {
         }
     }
 
-    public void removeRoomFromOrganization(long organizationId, long roomId) {
+    public void removeRoomFromOrganization(long organizationId, String roomName) {
         Optional<Organization> organizationOptional = organizationRepository.findById(organizationId);
-        Optional<Room> roomOptional = roomRepository.findById(roomId);
 
-        if (organizationOptional.isPresent() && roomOptional.isPresent()) {
+        if (organizationOptional.isPresent()) {
             Organization organization = organizationOptional.get();
-            Room room = roomOptional.get();
+            List<Room> rooms = organization.getRooms();
 
-            if (organization.getRooms().contains(room)) {
-                organization.getRooms().remove(room);
+            // Find the room by name
+            Optional<Room> roomOptional = rooms.stream()
+                    .filter(room -> room.getName().equalsIgnoreCase(roomName))
+                    .findFirst();
+
+            if (roomOptional.isPresent()) {
+                Room room = roomOptional.get();
                 room.setOrganization(null);
+                room.setAvailability(true);
+                rooms.remove(room);
                 roomRepository.save(room);
                 organizationRepository.save(organization);
             } else {
                 throw new IllegalArgumentException("Room is not associated with the organization");
             }
         } else {
-            throw new IllegalArgumentException("Organization or Room not found");
+            throw new IllegalArgumentException("Organization not found");
         }
     }
 

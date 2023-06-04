@@ -2,6 +2,7 @@ package com.example.finalProject.controler;
 
 import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
+import com.example.finalProject.model.ReservationDTO;
 import com.example.finalProject.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,13 +13,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/reservation")
-@CrossOrigin(origins="http://localhost:4200")
+@CrossOrigin(origins="http://localhost:4201")
 public class ReservationController {
     @Autowired
     ReservationService reservationService;
 
     @GetMapping("/all")
-    public List<Reservation> listOrganizations() {
+    public List<ReservationDTO> listReservations() {
         return reservationService.listReservations();
     }
 

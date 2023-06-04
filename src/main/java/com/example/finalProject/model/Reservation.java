@@ -1,15 +1,18 @@
 package com.example.finalProject.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "reservation")
 public class Reservation {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "serial")
@@ -25,27 +28,21 @@ public class Reservation {
     private Organization organization;
 
     @NotNull(message = "Room is required")
-    @OneToOne
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "room_identifier", columnDefinition = "integer")
     private Room room;
 
     @NotNull(message = "Date is required")
     @FutureOrPresent
     private LocalDate date;
 
-    @AssertTrue(message = "Meeting cannot be set later than two weeks in advance")
-    private boolean isDateValid() {
-        LocalDate currentDate = LocalDate.now();
-        LocalDate maxAllowedDate = currentDate.plusWeeks(2);
-        return date.isBefore(maxAllowedDate) || date.isEqual(maxAllowedDate);
-    }
-
-    @NotNull(message = "Start time is required")
+    @NotNull(message = "Start time of the meeting is required")
     private LocalTime startTime;
 
-    @NotNull(message = "End time is required")
+    @NotNull(message = "End time of the meeting is required")
     private LocalTime endTime;
 
-    @AssertTrue(message = "End time must be after start time")
+    @AssertTrue(message = "End time of the meeting must be after it's start time")
     private boolean isEndTimeAfterStartTime() {
         return endTime.isAfter(startTime);
     }
@@ -55,9 +52,20 @@ public class Reservation {
         return startTime.isAfter(LocalTime.of(5, 59)) && startTime.isBefore(LocalTime.of(19, 1));
     }
 
-    @AssertTrue(message = "Meeting can't take place after 8pm")
-    private boolean isEndTimeValid() {
-        return endTime.isAfter(LocalTime.of(5, 59)) && endTime.isBefore(LocalTime.of(20, 1));
+    @AssertTrue(message = "Invalid meeting time: ")
+    private boolean isDateValid() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate maxAllowedDate = currentDate.plusWeeks(2);
+
+        if (date.isEqual(currentDate)) {
+            throw new IllegalArgumentException("Cannot make a reservation for today.");
+        } else if (date.isBefore(currentDate)) {
+            throw new IllegalArgumentException("Cannot make a reservation for a past date.");
+        } else if (date.isAfter(maxAllowedDate)) {
+            throw new IllegalArgumentException("Cannot make a reservation more than two weeks in advance.");
+        }
+
+        return true;
     }
 
     public Reservation() {

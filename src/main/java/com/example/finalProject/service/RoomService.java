@@ -1,11 +1,11 @@
 package com.example.finalProject.service;
 
-import com.example.finalProject.model.Organization;
-import com.example.finalProject.model.Room;
+import com.example.finalProject.model.*;
 import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,8 +15,28 @@ public class RoomService {
     @Autowired
     RoomRepository roomRepository;
 
-    public List<Room> listRoom() {
-        return roomRepository.findAll();
+    public RoomDTO convertToDTO(Room room) {
+        RoomDTO roomDTO = new RoomDTO();
+        roomDTO.setId(room.getId());
+        roomDTO.setName(room.getName());
+        roomDTO.setIdentifier(room.getIdentifier());
+        roomDTO.setLevel(room.getLevel());
+        roomDTO.setAvailability(room.getAvailability());
+        roomDTO.setNumberOfSittingPlaces(room.getNumberOfSittingPlaces());
+        roomDTO.setNumberOfStandingPlaces(room.getNumberOfStandingPlaces());
+
+
+        return roomDTO;
+    }
+
+    public List<RoomDTO> listRooms() {
+        List<Room> allRooms = roomRepository.findAll();
+        List<RoomDTO> processedRooms = new ArrayList<>();
+        for (Room room : allRooms) {
+            RoomDTO reservationDTO = convertToDTO(room);
+            processedRooms.add(reservationDTO);
+        }
+        return processedRooms;
     }
 
     public Optional<Room> getRoomById(long id) {
@@ -33,21 +53,50 @@ public class RoomService {
 
     public void addRoom(Room room) {
         String roomName = room.getName().toLowerCase();
+        String roomIdentifier = room.getIdentifier();
 
-        List<Room> existingRooms = getRoomByName(roomName);
-        if (!existingRooms.isEmpty()) {
+        Optional<Room> existingRoom = getRoomByName(roomName)
+                .stream()
+                .filter(r -> r.getName().equalsIgnoreCase(roomName))
+                .findFirst();
+
+        if (existingRoom.isPresent()) {
             String errorMessage = "Room with the name '" + room.getName() + "' already exists";
             throw new IllegalArgumentException(errorMessage);
         }
+
+        List<Room> roomsWithSameIdentifier = roomRepository.findByIdentifier(roomIdentifier);
+
+        if (!roomsWithSameIdentifier.isEmpty()) {
+            String errorMessage = "Room with the identifier '" + roomIdentifier + "' already exists";
+            throw new IllegalArgumentException(errorMessage);
+        }
+
         room.setName(roomName);
         roomRepository.save(room);
     }
 
+
     public void replaceRoom(long id, Room newRoom) {
-        if(roomRepository.existsById(id)) {
-            newRoom.setId(id);
-            roomRepository.save(newRoom);
+        String roomName = newRoom.getName().toLowerCase();
+
+        List<Room> existingRooms = getRoomByName(roomName);
+        if (!existingRooms.isEmpty()) {
+            for (Room room : existingRooms) {
+                if (room.getId() != id) {
+                    String errorMessage = "A room with the name '" + newRoom.getName() + "' already exists";
+                    throw new IllegalArgumentException(errorMessage);
+                }
+            }
         }
-        else throw new IllegalArgumentException("Room doesn't exists with id: " + id);
+
+        if (roomRepository.existsById(id)) {
+            newRoom.setId(id);
+            newRoom.setName(roomName);
+            roomRepository.save(newRoom);
+        } else {
+            throw new IllegalArgumentException("Room doesn't exist with id: " + id);
+        }
     }
+
 }
