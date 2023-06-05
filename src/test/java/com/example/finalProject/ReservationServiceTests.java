@@ -2,6 +2,7 @@ package com.example.finalProject;
 
 import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
+import com.example.finalProject.model.ReservationDTO;
 import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.ReservationRepository;
 import com.example.finalProject.service.ReservationService;
@@ -13,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,21 +35,92 @@ public class ReservationServiceTests {
     }
 
     @Test
-    void listReservationsShouldReturnAllReservations() {
+    void convertToDTOShouldConvertReservationToDTO() {
         // Given
-        Reservation res1 = new Reservation("Res1", null, null, null, null, null);
-        Reservation res2 = new Reservation("Res2", null, null, null, null, null);
-        List<Reservation> reservations = new ArrayList<>();
-        reservations.add(res1);
-        reservations.add(res2);
+        Organization organization = new Organization();
+        organization.setId(1);
+        organization.setName("Test Org");
 
-        when(reservationRepository.findAll()).thenReturn(reservations);
+        Room room = new Room();
+        room.setId(1);
+        room.setName("Test Room");
+
+        Reservation reservation = new Reservation();
+        reservation.setId(1);
+        reservation.setIdentifier("ABC123");
+        reservation.setDate(LocalDate.of(2023, 6, 4));
+        reservation.setStartTime(LocalTime.of(10, 0));
+        reservation.setEndTime(LocalTime.of(12, 0));
+        reservation.setRoom(room);
+        reservation.setOrganization(organization);
 
         // When
-        List<Reservation> result = reservationService.listReservations();
+        ReservationDTO result = reservationService.convertToDTO(reservation);
 
         // Then
-        assertEquals(reservations, result);
+        assertEquals(1, result.getId());
+        assertEquals("ABC123", result.getIdentifier());
+        assertEquals(LocalDate.of(2023, 6, 4), result.getDate());
+        assertEquals(LocalTime.of(10, 0), result.getStartTime());
+        assertEquals(LocalTime.of(12, 0), result.getEndTime());
+        assertEquals("Test Room", result.getRoomName());
+        assertEquals("Test Org", result.getOrganizationName());
+    }
+
+    @Test
+    void listReservationsShouldReturnListOfReservationDTOs() {
+        // Given
+        Organization organization = new Organization();
+        organization.setId(1);
+        organization.setName("Test Org");
+
+        Room room = new Room();
+        room.setId(1);
+        room.setName("Test Room");
+
+        Reservation reservation1 = new Reservation();
+        reservation1.setId(1);
+        reservation1.setIdentifier("ABC123");
+        reservation1.setDate(LocalDate.of(2023, 6, 4));
+        reservation1.setStartTime(LocalTime.of(10, 0));
+        reservation1.setEndTime(LocalTime.of(12, 0));
+        reservation1.setRoom(room);
+        reservation1.setOrganization(organization);
+
+        Reservation reservation2 = new Reservation();
+        reservation2.setId(2);
+        reservation2.setIdentifier("DEF456");
+        reservation2.setDate(LocalDate.of(2023, 6, 5));
+        reservation2.setStartTime(LocalTime.of(14, 0));
+        reservation2.setEndTime(LocalTime.of(16, 0));
+        reservation2.setRoom(room);
+        reservation2.setOrganization(organization);
+
+        when(reservationRepository.findAll()).thenReturn(Arrays.asList(reservation1, reservation2));
+
+        // When
+        List<ReservationDTO> result = reservationService.listReservations();
+
+        // Then
+        assertEquals(2, result.size());
+
+        ReservationDTO dto1 = result.get(0);
+        assertEquals(1, dto1.getId());
+        assertEquals("ABC123", dto1.getIdentifier());
+        assertEquals(LocalDate.of(2023, 6, 4), dto1.getDate());
+        assertEquals(LocalTime.of(10, 0), dto1.getStartTime());
+        assertEquals(LocalTime.of(12, 0), dto1.getEndTime());
+        assertEquals("Test Room", dto1.getRoomName());
+        assertEquals("Test Org", dto1.getOrganizationName());
+
+        ReservationDTO dto2 = result.get(1);
+        assertEquals(2, dto2.getId());
+        assertEquals("DEF456", dto2.getIdentifier());
+        assertEquals(LocalDate.of(2023, 6, 5), dto2.getDate());
+        assertEquals(LocalTime.of(14, 0), dto2.getStartTime());
+        assertEquals(LocalTime.of(16, 0), dto2.getEndTime());
+        assertEquals("Test Room", dto2.getRoomName());
+        assertEquals("Test Org", dto2.getOrganizationName());
     }
 
     @Test

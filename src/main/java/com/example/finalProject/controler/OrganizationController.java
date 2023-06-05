@@ -1,6 +1,7 @@
 package com.example.finalProject.controler;
 
 import com.example.finalProject.model.Organization;
+import com.example.finalProject.model.OrganizationDTO;
 import com.example.finalProject.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,14 +12,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/organization")
-@CrossOrigin(origins="http://localhost:4200")
+@CrossOrigin(origins="http://localhost:4201")
 public class OrganizationController {
 
     @Autowired
     OrganizationService organizationService;
 
     @GetMapping("/all")
-    public List<Organization> listOrganizations() {
+    public List<OrganizationDTO> listOrganizations() {
         return organizationService.listOrganizations();
     }
 
@@ -53,8 +54,8 @@ public class OrganizationController {
         organizationService.addRoomToOrganization(organizationId, roomId);
     }
 
-    @PostMapping("/{organizationId}/remove-room/{roomId}")
-    public void removeRoomFromOrganization(@PathVariable(name = "organizationId") long organizationId, @PathVariable(name = "roomId") long roomId) {
-        organizationService.removeRoomFromOrganization(organizationId, roomId);
+    @PostMapping("/{organizationId}/remove-room/{roomName}")
+    public void removeRoomFromOrganization(@PathVariable(name = "organizationId") long organizationId, @PathVariable(name = "roomName") String roomName) {
+        organizationService.removeRoomFromOrganization(organizationId, roomName);
     }
 }
