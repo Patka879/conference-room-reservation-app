@@ -7,6 +7,7 @@
 ## Table of contents
 * [General info](#general-info)
 * [Rules of the application](#rules-of-the-application)
+* [Planned implementations](#planned-implementations)
 * [API Reference examples](#api-reference-examples)
 * [Technologies](#technologies)
 * [Setup](#setup)
@@ -41,6 +42,10 @@ separate reservations
 * Start Time must be after 5:59AM and before 7:01PM
 * End Time must be after 5:59AM and before 8:01pm
 * Reservation for given room can be only made if this room is associated with given reservation. 
+
+## Planned implementations
+* <b>Removing rooms from organizations:</b> After choosing organization, we will see only rooms that are assigned to this organization on rooms dropdown list.
+* <b>Creating reservations:</b> After choosing organization, we will see only rooms that are assigned to this organization on rooms dropdown list.
 
 
 ## API Reference examples
