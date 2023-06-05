@@ -144,7 +144,7 @@ public class OrganizationControllerTest {
         when(organizationRepository.findById(id)).thenReturn(Optional.of(org));
 
         // When
-        Optional<Organization> result = organizationService.getOrganizationById(id);
+        Optional<Organization> result = Optional.ofNullable(organizationService.getOrganizationById(id));
 
         // Then
         assertEquals(Optional.of(org), result);
@@ -158,7 +158,7 @@ public class OrganizationControllerTest {
         when(organizationRepository.findById(id)).thenReturn(Optional.empty());
 
         // When
-        Optional<Organization> result = organizationService.getOrganizationById(id);
+        Optional<Organization> result = Optional.ofNullable(organizationService.getOrganizationById(id));
 
         // Then
         assertEquals(Optional.empty(), result);

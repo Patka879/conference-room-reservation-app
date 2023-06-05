@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/organization")
-@CrossOrigin(origins="http://localhost:4201")
+@CrossOrigin(origins="http://localhost")
 public class OrganizationController {
 
     @Autowired
@@ -25,7 +25,7 @@ public class OrganizationController {
 
     @GetMapping("/{id}")
     public Optional<Organization> getOrganizationById(@PathVariable long id) {
-        return organizationService.getOrganizationById(id);
+        return Optional.ofNullable(organizationService.getOrganizationById(id));
     }
 
     @GetMapping("/named/{name}")

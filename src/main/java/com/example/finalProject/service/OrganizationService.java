@@ -48,12 +48,22 @@ public class OrganizationService {
         return processedReservations;
     }
 
-    public Optional<Organization> getOrganizationById(long id) {
-        return organizationRepository.findById(id);
+    public Organization getOrganizationById(long id) {
+        Optional<Organization> organization = organizationRepository.findById(id);
+        if (organization.isPresent()) {
+            return organization.get();
+        } else {
+            throw new IllegalArgumentException("Organization not found for ID: " + id);
+        }
     }
 
     public void deleteOrganization(long id) {
-        organizationRepository.deleteById(id);
+        Optional<Organization> organization = organizationRepository.findById(id);
+        if (organization.isPresent()) {
+            organizationRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("Organization not found for ID: " + id);
+        }
     }
 
     public List<Organization> getOrganizationByName(String name) {
@@ -74,11 +84,12 @@ public class OrganizationService {
     }
 
     public void replaceOrganization(long id, Organization newOrganization) {
-        if(organizationRepository.existsById(id)) {
+        if (organizationRepository.existsById(id)) {
             newOrganization.setId(id);
             organizationRepository.save(newOrganization);
+        } else {
+            throw new IllegalArgumentException("Organization not found for id: " + id);
         }
-        else throw new IllegalArgumentException("Organization doesn't exists with id: " + id);
     }
 
     public void addRoomToOrganization(long organizationId, long roomId) {
