@@ -97,7 +97,6 @@ public class ReservationService {
 
         Room room = roomOptional.get();
 
-        // Check for overlapping reservations
         List<Reservation> organizationReservations = reservationRepository.findByOrganizationId(organizationId);
         for (Reservation existingReservation : organizationReservations) {
             if (areReservationsOverlapping(existingReservation, reservation)) {
@@ -111,7 +110,6 @@ public class ReservationService {
 
         reservationRepository.save(reservation);
     }
-
 
     private boolean areReservationsOverlapping(Reservation existingReservation, Reservation newReservation) {
         LocalDateTime existingStart = LocalDateTime.of(existingReservation.getDate(), existingReservation.getStartTime());
@@ -150,6 +148,14 @@ public class ReservationService {
 
         if (!isValidReservationDate(newReservation.getDate())) {
             throw new IllegalArgumentException("Invalid reservation date. Cannot make a reservation for today, a past date, or more than two weeks in advance.");
+        }
+
+        List<Reservation> organizationReservations = reservationRepository.findByOrganizationId(existingReservation.getOrganization().getId());
+        for (Reservation existingReservationInOrganization : organizationReservations) {
+            if (existingReservationInOrganization.getId() != existingReservation.getId() &&
+                    areReservationsOverlapping(existingReservationInOrganization, newReservation)) {
+                throw new IllegalArgumentException("The new reservation overlaps with an existing reservation");
+            }
         }
 
         existingReservation.setIdentifier(newReservationIdentifier);
