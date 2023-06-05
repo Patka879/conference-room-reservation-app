@@ -102,9 +102,7 @@ separate reservations
 
 #### Sample output (invalid parameters):
 ```
-{
-   Organization not found for ID: 157
-}
+Organization not found for ID: 157
 ```
 
 ### POST
@@ -145,7 +143,7 @@ separate reservations
 
 #### Sample output (invalid parameters):
 ```
-"Organization not found for ID: 1"
+Organization not found for ID: 1
 ```
 
 ### PATCH (replace organization data)
@@ -161,7 +159,7 @@ separate reservations
 #### Sample output (invalid parameters):
 
 ```
-"Organization not found for id: 1"
+Organization not found for id: 1
 ```
 
 
@@ -177,7 +175,7 @@ separate reservations
 
 #### Sample output (invalid parameters):
 ```
- Organization or Room not found
+Organization or Room not found
 ```
 
 ## Technologies
