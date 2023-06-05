@@ -205,12 +205,10 @@ $ git clone https://github.com/Patka879/finalProject.
 
 * Open the project in your preferred Java IDE.
 
-* Build the project to resolve dependencies and compile the code.
-
-* Run the project by executing the main class (FinalProjectApplication) or using the IDE's built-in running mechanism.
-
-* Once the server is running, you can interact with the API endpoints using HTTP requests.
-
+* Run Dockerfile to build container and expose it to port 8080:
+```
+docker run -p 8080:8080 backend
+````
 * If you also want to set up the front-end of the project, clone the front-end repository:
 ```
 $ git clone from https://github.com/Patka879/finalProject
