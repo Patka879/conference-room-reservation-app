@@ -5,17 +5,7 @@ import java.util.List;
 public class OrganizationDTO {
     private long id;
     private String name;
-
     private List<String> roomNames;
-
-    public List<String> getRoomNames() {
-        return roomNames;
-    }
-
-    public void setRoomNames(List<String> roomNames) {
-        this.roomNames = roomNames;
-    }
-
     public OrganizationDTO() {
     }
 
@@ -39,6 +29,12 @@ public class OrganizationDTO {
         this.name = name;
     }
 
+    public List<String> getRoomNames() {
+        return roomNames;
+    }
+    public void setRoomNames(List<String> roomNames) {
+        this.roomNames = roomNames;
+    }
 
 }
 

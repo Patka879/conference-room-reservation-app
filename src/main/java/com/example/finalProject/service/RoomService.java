@@ -25,8 +25,6 @@ public class RoomService {
         roomDTO.setAvailability(room.getAvailability());
         roomDTO.setNumberOfSittingPlaces(room.getNumberOfSittingPlaces());
         roomDTO.setNumberOfStandingPlaces(room.getNumberOfStandingPlaces());
-
-
         return roomDTO;
     }
 
@@ -58,7 +56,6 @@ public class RoomService {
         }
         roomRepository.deleteById(id);
     }
-
 
     public void addRoom(Room room) {
         String roomName = room.getName().toLowerCase();

@@ -45,6 +45,5 @@ public class EquipmentController {
     @PatchMapping("/replace/{id}")
     public void replaceEquipment(@PathVariable long id, @RequestBody Equipment newEquipment) {
         equipmentService.replaceEquipment(id, newEquipment);
-
     }
 }
