@@ -5,4 +5,6 @@ FROM openjdk:17-alpine
 COPY /target/finalProject-0.0.1-SNAPSHOT.jar finalProject.jar
 
 #3 wskazanie punktu startu aplikacji
-ENTRYPOINT ["java", "-jar" ,"finalProject"]
+ENTRYPOINT ["java", "-jar" ,"finalProject.jar"]
+
+EXPOSE 8080

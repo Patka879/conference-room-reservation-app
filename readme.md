@@ -1,5 +1,5 @@
 
-# BOOKER - CONFERENCE ROOM RESERVATION SYSTEM
+# BOOKEY - CONFERENCE ROOM RESERVATION SYSTEM
 ##### Project back-end repository: https://github.com/Patka879/finalProject
 ##### Project front-end repository: https://github.com/Patka879/finalProjectFrontend
 
@@ -10,6 +10,7 @@
 * [API Reference examples](#api-reference-examples)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Author](#author)
 
 ## General info
 System created for managing reservations for conference rooms within one building, for multiple organizations.
@@ -209,8 +210,9 @@ $ git clone https://github.com/Patka879/finalProject.
 
 * If you also want to set up the front-end of the project, clone the front-end repository:
 ```
-$ git clone from https://github.com/Patka879/finalProjectFrontend and follow the setup instructions provided in its README file.
+$ git clone from https://github.com/Patka879/finalProject
 ```
+Frontend and follow the setup instructions provided in its README file.
 That's it! You should now have the back-end of the Booker - Conference Room Reservation System project set up and running.
 
 ## Author

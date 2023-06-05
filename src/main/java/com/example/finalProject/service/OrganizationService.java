@@ -126,7 +126,6 @@ public class OrganizationService {
             Organization organization = organizationOptional.get();
             List<Room> rooms = organization.getRooms();
 
-            // Find the room by name
             Optional<Room> roomOptional = rooms.stream()
                     .filter(room -> room.getName().equalsIgnoreCase(roomName))
                     .findFirst();
