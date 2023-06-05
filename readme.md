@@ -211,7 +211,6 @@ $ git clone https://github.com/Patka879/finalProject.
 
 * If you also want to set up the front-end of the project, clone the front-end repository:
 ```
-
 $ git clone from https://github.com/Patka879/finalProject
 ```
 Frontend and follow the setup instructions provided in its README file.
