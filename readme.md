@@ -163,7 +163,7 @@ separate reservations
 
 
 ### PATCH (add room to organization)
-```http
+```
   PATCH organization/{organizationId}/add-room/{roomId}
 ```
 | Parameter        | Type     | Description                          |
@@ -210,9 +210,11 @@ $ git clone https://github.com/Patka879/finalProject.
 
 * If you also want to set up the front-end of the project, clone the front-end repository:
 ```
+
 $ git clone from https://github.com/Patka879/finalProject
 ```
 Frontend and follow the setup instructions provided in its README file.
+
 That's it! You should now have the back-end of the Booker - Conference Room Reservation System project set up and running.
 
 ## Author
