@@ -83,6 +83,18 @@ public class OrganizationService {
     }
 
     public void replaceOrganization(long id, Organization newOrganization) {
+        String organizationName = newOrganization.getName().toLowerCase();
+
+        List<Organization> existingOrganizations = getOrganizationByName(organizationName);
+        if (!existingOrganizations.isEmpty()) {
+            for (Organization organization : existingOrganizations) {
+                if (organization.getId() != id) {
+                    String errorMessage = "An organization with the name '" + newOrganization.getName() + "' already exists";
+                    throw new IllegalArgumentException(errorMessage);
+                }
+            }
+        }
+
         if (organizationRepository.existsById(id)) {
             newOrganization.setId(id);
             organizationRepository.save(newOrganization);
