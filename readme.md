@@ -28,7 +28,7 @@ This repository contains back-end code of the project. In order to find front-en
   character, can't be blank)
 * Any number of rooms can be added to given organization
 * One room can be added to only one organization at a time. 
-* Organization can't be deleted if there are reservations for given organization.
+* <b>Organization can't be deleted if there are reservations for given organization.</b>
 ### Reservations
 * Identifier (unique in the system, min 2 characters, max 20 character, can't
   be blank)
