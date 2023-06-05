@@ -162,7 +162,7 @@ separate reservations
 
 
 ### PATCH (add room to organization)
-```http
+```
   PATCH organization/{organizationId}/add-room/{roomId}
 ```
 | Parameter        | Type     | Description                          |
