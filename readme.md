@@ -164,7 +164,7 @@ Organization not found for id: 1
 
 
 ### PATCH (add room to organization)
-```
+```http
   PATCH organization/{organizationId}/add-room/{roomId}
 ```
 | Parameter        | Type     | Description                          |
