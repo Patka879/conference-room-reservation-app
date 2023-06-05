@@ -46,6 +46,8 @@ separate reservations
 ## Planned implementations
 * <b>Removing rooms from organizations:</b> After choosing organization, we will see only rooms that are assigned to this organization on rooms dropdown list.
 * <b>Creating reservations:</b> After choosing organization, we will see only rooms that are assigned to this organization on rooms dropdown list.
+* <b>Room tests and Organization Tests:</b> Three tests that are based on assertions are sending error messages in polish. After changing language to english, errors
+  are sent in english but not in test enviroment. Errors in tests are tested in polish language but they don't work in CI/CD build so they had to commented out for given     moment. 
 
 
 ## API Reference examples
