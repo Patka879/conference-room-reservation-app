@@ -101,9 +101,9 @@ separate reservations
 ```
 
 #### Sample output (invalid parameters):
-```json
+```
 {
-  "message": "Organization not found for ID: 157"
+   Organization not found for ID: 157
 }
 ```
 
@@ -113,9 +113,9 @@ separate reservations
   POST /organization/new
 ```
 
-| Parameter | Type   | Description                  |
-|:----------|:-------|:-----------------------------|
-| `body`    | `json` | **Required** organizationName|
+| Parameter | Type   | Description                                |
+|:----------|:-------|:-------------------------------------------|
+| `body`    | `json` | **Required** {organizationName": "capita" |
 
 #### Sample output:
 ```json
@@ -128,10 +128,8 @@ separate reservations
 ```
 
 #### Sample output (invalid parameters):
-```json
-
+```
   Organization with the name 'Capita' already exists"
-
 ```
 
 ### DELETE
