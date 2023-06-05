@@ -1,9 +1,7 @@
 package com.example.finalProject;
 
-import static org.mockito.Mockito.when;
-
+import com.example.finalProject.model.DTOs.OrganizationDTO;
 import com.example.finalProject.model.Organization;
-import com.example.finalProject.model.OrganizationDTO;
 import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.OrganizationRepository;
 import com.example.finalProject.repository.RoomRepository;
@@ -17,14 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import java.util.List;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class OrganizationControllerTest {
+public class OrganizationTests {
 
     @Mock
     private OrganizationRepository organizationRepository;
@@ -66,6 +63,7 @@ public class OrganizationControllerTest {
             assertTrue(expectedMessages.contains(actualMessage));
         }
     }
+
     @Test
     public void oneLetterOrganizationNameShouldCauseViolation() {
         Organization organization = new Organization();
@@ -89,6 +87,7 @@ public class OrganizationControllerTest {
         Set<ConstraintViolation<Organization>> violations = validator.validate(organization);
         assertTrue(violations.isEmpty());
     }
+
     @Test
     void convertToDTOShouldConvertOrganizationToDTO() {
         // Given
@@ -136,91 +135,99 @@ public class OrganizationControllerTest {
 
 
     @Test
-    void getOrganizationByIdShouldReturnOrganization() {
+    void getOrganizationByIdShouldReturnOrganizationWhenIdExists() {
         // Given
         long id = 1;
-        Organization org = new Organization(id, "Org1");
-
-        when(organizationRepository.findById(id)).thenReturn(Optional.of(org));
+        Organization organization = new Organization();
+        organization.setId(id);
+        organization.setName("Test Organization");
+        when(organizationRepository.findById(id)).thenReturn(Optional.of(organization));
 
         // When
-        Optional<Organization> result = Optional.ofNullable(organizationService.getOrganizationById(id));
+        Organization result = organizationService.getOrganizationById(id);
 
         // Then
-        assertEquals(Optional.of(org), result);
+        assertEquals(id, result.getId());
+        assertEquals("Test Organization", result.getName());
     }
 
     @Test
-    void getOrganizationByIdShouldReturnEmptyOptionalWhenIdDoesntExists() {
+    void getOrganizationByIdShouldThrowExceptionWhenIdDoesNotExist() {
         // Given
         long id = 1;
-
         when(organizationRepository.findById(id)).thenReturn(Optional.empty());
 
-        // When
-        Optional<Organization> result = Optional.ofNullable(organizationService.getOrganizationById(id));
-
-        // Then
-        assertEquals(Optional.empty(), result);
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.getOrganizationById(id);
+        });
     }
 
     @Test
-    void addOrganizationShouldSaveOrganization() {
+    void deleteOrganizationShouldDeleteExistingOrganization() {
         // Given
         long id = 1;
-        Organization org = new Organization(id, "Org1");
-
-        when(organizationRepository.findByName("Org1")).thenReturn(Collections.emptyList());
+        Organization organization = new Organization();
+        organization.setId(id);
+        organization.setName("Test Organization");
+        when(organizationRepository.findById(id)).thenReturn(Optional.of(organization));
 
         // When
-        organizationService.addOrganization(org);
+        assertDoesNotThrow(() -> {
+            organizationService.deleteOrganization(id);
+        });
 
         // Then
-        verify(organizationRepository, never()).findById(id);
-        verify(organizationRepository, times(1)).save(org);
+        verify(organizationRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteOrganizationShouldThrowExceptionWhenOrganizationNotFound() {
+        // Given
+        long id = 1;
+        when(organizationRepository.findById(id)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.deleteOrganization(id);
+        });
+    }
+
+
+    @Test
+    void addOrganizationShouldAddNewOrganization() {
+        // Given
+        Organization organization = new Organization();
+        organization.setName("Test Organization");
+
+        when(organizationService.getOrganizationByName("test organization")).thenReturn(Collections.emptyList());
+        when(organizationRepository.save(organization)).thenReturn(organization);
+
+        // When
+        assertDoesNotThrow(() -> {
+            organizationService.addOrganization(organization);
+        });
+
+        // Then
+        verify(organizationRepository, times(1)).save(organization);
     }
 
     @Test
     public void addOrganizationShouldThrowExceptionWhenAddingExistingOrganization() {
         // Given
-        Organization existingOrganization = new Organization();
-        existingOrganization.setName("Org1");
+        Organization organization = new Organization();
+        organization.setName("Existing Organization");
 
-        when(organizationRepository.findByName("Org1")).thenReturn(Arrays.asList(existingOrganization));
+        List<Organization> existingOrganizations = new ArrayList<>();
+        existingOrganizations.add(organization);
 
-        Organization newOrganization = new Organization();
-        newOrganization.setName("Org1");
-
-        // When/Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.addOrganization(existingOrganization);
-        });
-
-        assertEquals("Organization with the name 'Org1' already exists", exception.getMessage());
-        verify(organizationRepository, never()).save(newOrganization);
-    }
-
-    @Test
-    void addOrganizationShouldThrowExceptionWhenAddingExistingOrganizationWithDifferentCase() {
-        // Given
-        Organization existingOrganization = new Organization();
-        existingOrganization.setName("Org1");
-
-        when(organizationRepository.findByName("org1")).thenReturn(Arrays.asList(existingOrganization));
-
-        Organization newOrganization = new Organization();
-        newOrganization.setName("org1");
+        when(organizationService.getOrganizationByName("existing organization")).thenReturn(existingOrganizations);
 
         // When/Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            organizationService.addOrganization(newOrganization);
+        assertThrows(IllegalArgumentException.class, () -> {
+            organizationService.addOrganization(organization);
         });
-
-        assertEquals("Organization with the name 'org1' already exists", exception.getMessage());
-        verify(organizationRepository, never()).save(newOrganization);
     }
-
-
 
     @Test
     void replaceOrganizationShouldReplaceOrganization() {

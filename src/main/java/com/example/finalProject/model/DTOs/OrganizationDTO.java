@@ -1,4 +1,4 @@
-package com.example.finalProject.model;
+package com.example.finalProject.model.DTOs;
 
 import java.util.List;
 

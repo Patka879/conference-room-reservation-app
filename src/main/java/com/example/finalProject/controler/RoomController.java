@@ -1,7 +1,7 @@
 package com.example.finalProject.controler;
 
 import com.example.finalProject.model.Room;
-import com.example.finalProject.model.RoomDTO;
+import com.example.finalProject.model.DTOs.RoomDTO;
 import com.example.finalProject.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class RoomController {
 
     @GetMapping("/{id}")
     public Optional<Room> getRoomById(@PathVariable long id) {
-        return roomService.getRoomById(id);
+        return Optional.ofNullable(roomService.getRoomById(id));
     }
 
     @GetMapping("/named/{name}")

@@ -1,8 +1,7 @@
 package com.example.finalProject.controler;
 
-import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
-import com.example.finalProject.model.ReservationDTO;
+import com.example.finalProject.model.DTOs.ReservationDTO;
 import com.example.finalProject.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

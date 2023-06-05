@@ -1,4 +1,4 @@
-package com.example.finalProject.model;
+package com.example.finalProject.model.DTOs;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -12,5 +12,4 @@ public class FinalProjectApplication {
 		Locale.setDefault(Locale.ENGLISH);
 		SpringApplication.run(FinalProjectApplication.class, args);
 	}
-
 }

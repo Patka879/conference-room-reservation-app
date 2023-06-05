@@ -17,16 +17,27 @@ public class EquipmentService {
         return equipmentRepository.findAll();
     }
 
-    public Optional<Equipment> getEquipmentById(long id) {
-        return equipmentRepository.findById(id);
+    public Equipment getEquipmentById(long id) {
+        Optional<Equipment> equipmentOptional = equipmentRepository.findById(id);
+        if (equipmentOptional.isEmpty()) {
+            throw new IllegalArgumentException("Equipment not found for ID: " + id);
+        }
+        return equipmentOptional.get();
     }
 
     public void deleteEquipment(long id) {
+        if (!equipmentRepository.existsById(id)) {
+            throw new IllegalArgumentException("Equipment not found for ID: " + id);
+        }
         equipmentRepository.deleteById(id);
     }
 
     public List<Equipment> getEquipmentByName(String name) {
-        return equipmentRepository.findByName(name);
+        List<Equipment> equipmentList = equipmentRepository.findByName(name);
+        if (equipmentList.isEmpty()) {
+            throw new IllegalArgumentException("No equipment found for name: " + name);
+        }
+        return equipmentList;
     }
 
     public void addEquipment(Equipment equipment) {
