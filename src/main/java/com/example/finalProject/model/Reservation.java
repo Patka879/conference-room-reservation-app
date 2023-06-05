@@ -52,6 +52,11 @@ public class Reservation {
         return startTime.isAfter(LocalTime.of(5, 59)) && startTime.isBefore(LocalTime.of(19, 1));
     }
 
+    @AssertTrue(message = "Meeting can start only after 6am and before 7pm")
+    private boolean isEndTimeValid() {
+        return endTime.isAfter(LocalTime.of(6, 59)) && endTime.isBefore(LocalTime.of(20, 1));
+    }
+
     @AssertTrue(message = "Invalid meeting time: ")
     private boolean isDateValid() {
         LocalDate currentDate = LocalDate.now();
