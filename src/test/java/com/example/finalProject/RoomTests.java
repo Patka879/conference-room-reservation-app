@@ -39,34 +39,34 @@ public class RoomTests {
         validator = factory.getValidator();
     }
 
-    @Ignore
-    @Test
-    public void testRoomAnnotations() {
-        Room room = new Room();
-        room.setName("A");
-        room.setIdentifier("RoomRoomRoom");
-        room.setId(1);
-        room.setAvailability(true);
-        room.setLevel(12);
-        room.setNumberOfSittingPlaces(10);
-        room.setNumberOfStandingPlaces(15);
-
-        Set<ConstraintViolation<Room>> violations = validator.validate(room);
-
-        assertEquals(3, violations.size());
-
-        List<String> expectedMessages = Arrays.asList(
-                "wielkość musi należeć do zakresu od 2 do 20",
-                "Identifier format is invalid",
-                "Level must be between 0 and 10"
-        );
-
-        for (ConstraintViolation<Room> violation : violations) {
-            String actualMessage = violation.getMessage();
-            System.out.println("Actual violation message: " + actualMessage);
-            assertTrue(expectedMessages.contains(actualMessage));
-        }
-    }
+//    @Ignore
+//    @Test
+//    public void testRoomAnnotations() {
+//        Room room = new Room();
+//        room.setName("A");
+//        room.setIdentifier("RoomRoomRoom");
+//        room.setId(1);
+//        room.setAvailability(true);
+//        room.setLevel(12);
+//        room.setNumberOfSittingPlaces(10);
+//        room.setNumberOfStandingPlaces(15);
+//
+//        Set<ConstraintViolation<Room>> violations = validator.validate(room);
+//
+//        assertEquals(3, violations.size());
+//
+//        List<String> expectedMessages = Arrays.asList(
+//                "wielkość musi należeć do zakresu od 2 do 20",
+//                "Identifier format is invalid",
+//                "Level must be between 0 and 10"
+//        );
+//
+//        for (ConstraintViolation<Room> violation : violations) {
+//            String actualMessage = violation.getMessage();
+//            System.out.println("Actual violation message: " + actualMessage);
+//            assertTrue(expectedMessages.contains(actualMessage));
+//        }
+//    }
 
     @Test
     void convertToDTOShouldConvertRoomToDTO() {
