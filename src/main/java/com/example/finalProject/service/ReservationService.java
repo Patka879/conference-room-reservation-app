@@ -181,7 +181,6 @@ public class ReservationService {
         } else if (date.isAfter(maxAllowedDate)) {
             return false;
         }
-
         return true;
     }
 }

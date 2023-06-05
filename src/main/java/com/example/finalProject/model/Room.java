@@ -37,7 +37,6 @@ public class Room {
     @NotNull(message = "Number of standing places is required")
     private Integer numberOfStandingPlaces;
 
-//    @JsonIgnore
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "organization_id", columnDefinition = "integer")
     public Organization organization;

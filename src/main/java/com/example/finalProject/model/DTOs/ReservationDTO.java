@@ -12,6 +12,20 @@ public class ReservationDTO {
     private String roomName;
     private String organizationName;
 
+    public ReservationDTO() {
+
+    }
+
+    public ReservationDTO(long id, String identifier, LocalDate date, LocalTime startTime, LocalTime endTime, String roomName, String organizationName) {
+        this.id = id;
+        this.identifier = identifier;
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.roomName = roomName;
+        this.organizationName = organizationName;
+    }
+
     public long getId() {
         return id;
     }

@@ -41,7 +41,6 @@ public class OrganizationTests {
         validator = factory.getValidator();
     }
 
-
     @Test
     public void organizationNameBlankShouldCauseTwoViolations() {
         Organization organization = new Organization();

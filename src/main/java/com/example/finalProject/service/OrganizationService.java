@@ -25,7 +25,6 @@ public class OrganizationService {
         organizationDTO.setId(organization.getId());
         organizationDTO.setName(organization.getName());
 
-
         List<String> roomNames = new ArrayList<>();
         List<Room> rooms = organization.getRooms();
         if (rooms != null) {
@@ -144,5 +143,4 @@ public class OrganizationService {
             throw new IllegalArgumentException("Organization not found");
         }
     }
-
 }

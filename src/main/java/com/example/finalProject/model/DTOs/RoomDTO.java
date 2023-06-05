@@ -22,6 +22,7 @@ public class RoomDTO {
     }
 
     public RoomDTO() {
+
     }
 
     public long getId() {
