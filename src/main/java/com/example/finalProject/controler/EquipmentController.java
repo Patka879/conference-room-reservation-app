@@ -23,7 +23,7 @@ public class EquipmentController {
 
     @GetMapping("/{id}")
     public Optional<Equipment> getEquipmentById(@PathVariable long id) {
-        return equipmentService.getEquipmentById(id);
+        return Optional.ofNullable(equipmentService.getEquipmentById(id));
     }
 
     @GetMapping("/named/{name}")

@@ -1,7 +1,7 @@
 package com.example.finalProject.controler;
 
 import com.example.finalProject.model.Organization;
-import com.example.finalProject.model.OrganizationDTO;
+import com.example.finalProject.model.DTOs.OrganizationDTO;
 import com.example.finalProject.service.OrganizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

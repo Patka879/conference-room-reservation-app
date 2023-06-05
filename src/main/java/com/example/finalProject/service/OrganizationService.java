@@ -1,13 +1,13 @@
 package com.example.finalProject.service;
 
 import com.example.finalProject.model.*;
+import com.example.finalProject.model.DTOs.OrganizationDTO;
 import com.example.finalProject.repository.OrganizationRepository;
 import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -126,7 +126,6 @@ public class OrganizationService {
             Organization organization = organizationOptional.get();
             List<Room> rooms = organization.getRooms();
 
-            // Find the room by name
             Optional<Room> roomOptional = rooms.stream()
                     .filter(room -> room.getName().equalsIgnoreCase(roomName))
                     .findFirst();

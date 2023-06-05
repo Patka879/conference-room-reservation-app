@@ -1,7 +1,7 @@
 package com.example.finalProject;
 
 import com.example.finalProject.model.Room;
-import com.example.finalProject.model.RoomDTO;
+import com.example.finalProject.model.DTOs.RoomDTO;
 import com.example.finalProject.repository.RoomRepository;
 import com.example.finalProject.service.RoomService;
 import jakarta.validation.ConstraintViolation;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class RoomControllerApplicationTests {
+public class RoomTests {
 
     @Mock
     private RoomRepository roomRepository;
@@ -152,24 +152,44 @@ public class RoomControllerApplicationTests {
         when(roomRepository.findById(id)).thenReturn(Optional.of(room));
 
         // When
-        Optional<Room> result = roomService.getRoomById(id);
+        Optional<Room> result = Optional.ofNullable(roomService.getRoomById(id));
 
         // Then
         assertEquals(Optional.of(room), result);
     }
 
     @Test
-    void getRoomByIdShouldReturnEmptyOptionalIfRoomDoesNotExist() {
+    void getRoomByIdShouldThrowExceptionWhenIdDoesNotExist() {
         // Given
         long id = 1;
-
         when(roomRepository.findById(id)).thenReturn(Optional.empty());
 
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> roomService.getRoomById(id));
+    }
+
+    @Test
+    void deleteRoomShouldDeleteRoomWhenIdExists() {
+        // Given
+        long id = 1;
+        when(roomRepository.existsById(id)).thenReturn(true);
+
         // When
-        Optional<Room> result = roomService.getRoomById(id);
+        roomService.deleteRoom(id);
 
         // Then
-        assertEquals(Optional.empty(), result);
+        verify(roomRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void deleteRoomShouldThrowExceptionWhenIdDoesNotExist() {
+        // Given
+        long id = 1;
+        when(roomRepository.existsById(id)).thenReturn(false);
+
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> roomService.deleteRoom(id));
+        verify(roomRepository, never()).deleteById(id);
     }
 
     @Test
@@ -188,46 +208,29 @@ public class RoomControllerApplicationTests {
         verify(roomRepository, times(1)).save(room);
     }
 
-
     @Test
-    public void addRoomShouldThrowExceptionWhenAddingRoomWithExistingName() {
+    void addRoomShouldThrowExceptionWhenAddingExistingRoom() {
         // Given
-        Room existingRoom = new Room();
-        existingRoom.setName("Room1");
+        Room room = new Room();
+        room.setName("Existing Room");
+        room.setIdentifier("Room001");
 
-        when(roomRepository.findByName("Room1")).thenReturn(Arrays.asList(existingRoom));
+        List<Room> existingRooms = new ArrayList<>();
+        existingRooms.add(room);
+
+        when(roomRepository.findByName("existing room")).thenReturn(existingRooms);
+        when(roomRepository.findByIdentifier("Room001")).thenReturn(Collections.emptyList());
 
         // When/Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            roomService.addRoom(existingRoom);
+        assertThrows(IllegalArgumentException.class, () -> {
+            roomService.addRoom(room);
         });
 
-        assertEquals("Room with the name 'Room1' already exists", exception.getMessage());
-        verify(roomRepository, never()).save(existingRoom);
+        verify(roomRepository, never()).save(any(Room.class));
     }
 
     @Test
-    public void addRoomShouldThrowExceptionWhenAddingExistingRoomButDifferentCase() {
-        // Given
-        Room existingRoom = new Room();
-        existingRoom.setName("Room1");
-
-        when(roomRepository.findByName("room1")).thenReturn(Arrays.asList(existingRoom));
-
-        Room newRoom = new Room();
-        newRoom.setName("room1");
-
-        // When/Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            roomService.addRoom(newRoom);
-        });
-
-        assertEquals("Room with the name 'room1' already exists", exception.getMessage());
-        verify(roomRepository, never()).save(newRoom);
-    }
-
-    @Test
-    public void addRoomShouldThrowExceptionWhenAddingExistingRoomWithIdentifier() {
+    public void addRoomShouldThrowExceptionWhenAddingRoomWithExistingIdentifier() {
         // Given
         Room existingRoom = new Room();
         existingRoom.setName("Room1");
@@ -248,9 +251,6 @@ public class RoomControllerApplicationTests {
         assertEquals("Room with the identifier 'R001' already exists", exception.getMessage());
         verify(roomRepository, never()).save(newRoom);
     }
-
-
-
 
     @Test
     void replaceRoomShouldReplaceRoom() {

@@ -2,7 +2,7 @@ package com.example.finalProject.service;
 
 import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
-import com.example.finalProject.model.ReservationDTO;
+import com.example.finalProject.model.DTOs.ReservationDTO;
 import com.example.finalProject.model.Room;
 import com.example.finalProject.repository.OrganizationRepository;
 import com.example.finalProject.repository.ReservationRepository;
@@ -56,15 +56,14 @@ public class ReservationService {
     }
 
     public void deleteReservation(long id) {
+        if (!reservationRepository.existsById(id)) {
+            throw new IllegalArgumentException("Reservation not found for ID: " + id);
+        }
         reservationRepository.deleteById(id);
     }
 
     public List<Reservation> getReservationByIdentifier(String identifier) {
         return reservationRepository.findByIdentifier(identifier);
-    }
-
-    public List<Reservation> getReservationInOrganization(Long id) {
-        return reservationRepository.findByOrganizationId(id);
     }
 
     public void addReservation(Reservation reservation, long organizationId, long roomId) {

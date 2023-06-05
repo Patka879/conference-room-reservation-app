@@ -1,4 +1,4 @@
-package com.example.finalProject.model;
+package com.example.finalProject.model.DTOs;
 
 public class RoomDTO {
     private long id;

@@ -2,8 +2,9 @@ package com.example.finalProject;
 
 import com.example.finalProject.model.Organization;
 import com.example.finalProject.model.Reservation;
-import com.example.finalProject.model.ReservationDTO;
+import com.example.finalProject.model.DTOs.ReservationDTO;
 import com.example.finalProject.model.Room;
+import com.example.finalProject.repository.OrganizationRepository;
 import com.example.finalProject.repository.ReservationRepository;
 import com.example.finalProject.service.ReservationService;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,21 +23,24 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ReservationServiceTests {
+public class ReservationTests {
 
     @Mock
     private ReservationRepository reservationRepository;
+
+    @Mock
+    private OrganizationRepository organizationRepository;
 
     @InjectMocks
     private ReservationService reservationService;
 
     @BeforeEach
-    void setup() {
+    public void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
     @Test
-    void convertToDTOShouldConvertReservationToDTO() {
+    public void convertToDTOShouldConvertReservationToDTO() {
         // Given
         Organization organization = new Organization();
         organization.setId(1);
@@ -68,7 +73,7 @@ public class ReservationServiceTests {
     }
 
     @Test
-    void listReservationsShouldReturnListOfReservationDTOs() {
+    public void listReservationsShouldReturnListOfReservationDTOs() {
         // Given
         Organization organization = new Organization();
         organization.setId(1);
@@ -122,114 +127,132 @@ public class ReservationServiceTests {
         assertEquals("Test Room", dto2.getRoomName());
         assertEquals("Test Org", dto2.getOrganizationName());
     }
-
     @Test
-    void getReservationByIdShouldReturnReservation() {
+    public void getReservationByIdShouldReturnEmptyOptionalWhenNotFound() {
         // Given
         long id = 1;
-        Reservation res = new Reservation("Res1", null, null, null, null, null);
-        res.setId(id);
-
-        when(reservationRepository.findById(id)).thenReturn(Optional.of(res));
-
-        // When
-        Optional<Reservation> result = reservationService.getReservationById(id);
-
-        // Then
-        assertEquals(Optional.of(res), result);
-    }
-
-    @Test
-    void getReservationByIdShouldReturnEmptyOptionalWhenIdDoesNotExist() {
-        // Given
-        long id = 1;
-
         when(reservationRepository.findById(id)).thenReturn(Optional.empty());
 
         // When
         Optional<Reservation> result = reservationService.getReservationById(id);
 
         // Then
-        assertEquals(Optional.empty(), result);
+        verify(reservationRepository).findById(id);
+        assertFalse(result.isPresent());
     }
 
-//    @Test
-//    void addReservationShouldSaveReservation() {
-//        // Given
-//        Reservation reservation = new Reservation("Res1", null, null, null, null, null);
-//
-//        when(reservationRepository.findByIdentifier("Res1")).thenReturn(new ArrayList<>());
-//
-//        // When
-//        reservationService.addReservation(reservation);
-//
-//        // Then
-//        verify(reservationRepository, never()).findByIdentifier("Res1");
-//        verify(reservationRepository, times(1)).save(reservation);
-//    }
-
-//    @Test
-//    void addReservationShouldThrowExceptionWhenAddingExistingReservation() {
-//        // Given
-//        String reservationIdentifier = "Res1";
-//        Organization organization = new Organization(1, "Org1");
-//        Room room = new Room(1, "Room1", "2.22", 10, true, 10, 10 );
-//        Reservation existingReservation = new Reservation(reservationIdentifier, organization, room, LocalDate.of(2023, 5, 1), LocalTime.of(8, 0), LocalTime.of(10, 30));
-//
-//        when(reservationRepository.findByIdentifier(reservationIdentifier)).thenReturn(Arrays.asList(existingReservation));
-//
-//        // When/Then
-//        assertThrows(IllegalArgumentException.class, () -> {
-//            Reservation newReservation = new Reservation(reservationIdentifier, organization, room, LocalDate.of(2023, 6, 1), LocalTime.of(9, 0), LocalTime.of(10, 30));
-//            reservationService.addReservation(newReservation);
-//        }, "Reservation with the identifier Res1 already exists");
-//
-//        verify(reservationRepository, never()).save(any(Reservation.class));
-//    }
-
     @Test
-    void replaceReservationShouldReplaceReservation() {
+    public void getReservationByIdShouldReturnReservationOptionalWhenFound() {
         // Given
         long id = 1;
-        Reservation existingReservation = new Reservation("Res1", null, null, null, null, null);
-        existingReservation.setId(id);
-        Reservation newReservation = new Reservation("Updated Res1", null, null, null, null, null);
-
-        when(reservationRepository.existsById(id)).thenReturn(true);
+        Reservation reservation = new Reservation();
+        reservation.setId(id);
+        when(reservationRepository.findById(id)).thenReturn(Optional.of(reservation));
 
         // When
-        reservationService.replaceReservation(id, newReservation);
+        Optional<Reservation> result = reservationService.getReservationById(id);
 
         // Then
-        verify(reservationRepository, times(1)).existsById(id);
-        verify(reservationRepository, times(1)).save(newReservation);
-        assertEquals(id, newReservation.getId());
+        verify(reservationRepository).findById(id);
+        assertTrue(result.isPresent());
+        assertEquals(reservation, result.get());
     }
-
     @Test
-    void replaceReservationShouldThrowExceptionWhenIdDoesNotExist() {
+    void deleteReservationShouldDeleteReservationWhenFound() {
         // Given
         long id = 1;
-        Reservation newReservation = new Reservation("Updated Res1", null, null, null, null, null);
-
-        when(reservationRepository.existsById(id)).thenReturn(false);
-
-        // When/Then
-        assertThrows(IllegalArgumentException.class, () -> reservationService.replaceReservation(id, newReservation));
-        verify(reservationRepository, times(1)).existsById(id);
-        verify(reservationRepository, never()).save(newReservation);
-    }
-
-    @Test
-    void deleteReservationShouldDeleteReservation() {
-        // Given
-        long id = 1;
+        Reservation reservation = new Reservation();
+        reservation.setId(id);
+        when(reservationRepository.existsById(id)).thenReturn(true);
 
         // When
         reservationService.deleteReservation(id);
 
         // Then
-        verify(reservationRepository, times(1)).deleteById(id);
+        verify(reservationRepository).deleteById(id);
+    }
+
+    @Test
+    void deleteReservationShouldThrowExceptionWhenNotFound() {
+        // Given
+        long id = 1;
+        when(reservationRepository.existsById(id)).thenReturn(false);
+
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> reservationService.deleteReservation(id));
+        verify(reservationRepository, never()).deleteById(id);
+    }
+
+    @Test
+    void replaceReservationShouldUpdateReservationWhenValid() {
+        // Given
+        long id = 1;
+        String existingIdentifier = "Existing Reservation";
+        LocalDate existingDate = LocalDate.now().plusDays(2);
+        LocalTime existingStartTime = LocalTime.now().plusHours(2);
+        LocalTime existingEndTime = LocalTime.now().plusHours(1);
+
+        Organization existingOrganization = new Organization();
+        existingOrganization.setId(4);
+        existingOrganization.setName("Example Organization");
+
+        Room existingRoom = new Room();
+        existingRoom.setId(4);
+        existingRoom.setName("Example Room");
+
+        Reservation existingReservation = new Reservation();
+        existingReservation.setId(id);
+        existingReservation.setIdentifier(existingIdentifier);
+        existingReservation.setOrganization(existingOrganization);
+        existingReservation.setRoom(existingRoom);
+        existingReservation.setDate(existingDate);
+        existingReservation.setStartTime(existingStartTime);
+        existingReservation.setEndTime(existingEndTime);
+
+        Reservation newReservation = new Reservation();
+        String newIdentifier = "new reservation";
+        LocalDate newDate = LocalDate.now().plusDays(1);
+        LocalTime newStartTime = LocalTime.now().plusHours(1);
+        LocalTime newEndTime = LocalTime.now().plusHours(2);
+
+        newReservation.setIdentifier(newIdentifier);
+        newReservation.setDate(newDate);
+        newReservation.setStartTime(newStartTime);
+        newReservation.setEndTime(newEndTime);
+
+        when(reservationRepository.findById(id)).thenReturn(Optional.of(existingReservation));
+
+        // When
+        reservationService.replaceReservation(id, newReservation);
+
+        // Then
+        verify(reservationRepository).save(existingReservation);
+        assertEquals(newIdentifier, existingReservation.getIdentifier());
+        assertEquals(newDate, existingReservation.getDate());
+        assertEquals(newStartTime, existingReservation.getStartTime());
+        assertEquals(newEndTime, existingReservation.getEndTime());
+    }
+
+    @Test
+    void replaceReservationShouldThrowExceptionWhenReservationNotFound() {
+        // Given
+        long id = 1;
+        when(reservationRepository.findById(id)).thenReturn(Optional.empty());
+
+        Reservation newReservation = new Reservation();
+        String newIdentifier = "New Reservation";
+        LocalDate newDate = LocalDate.now().plusDays(1);
+        LocalTime newStartTime = LocalTime.now().plusHours(1);
+        LocalTime newEndTime = LocalTime.now().plusHours(2);
+
+        newReservation.setIdentifier(newIdentifier);
+        newReservation.setDate(newDate);
+        newReservation.setStartTime(newStartTime);
+        newReservation.setEndTime(newEndTime);
+
+        // When/Then
+        assertThrows(IllegalArgumentException.class, () -> reservationService.replaceReservation(id, newReservation));
+        verify(reservationRepository, never()).save(any(Reservation.class));
     }
 }
 

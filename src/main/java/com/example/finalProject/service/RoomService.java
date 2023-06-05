@@ -1,6 +1,7 @@
 package com.example.finalProject.service;
 
 import com.example.finalProject.model.*;
+import com.example.finalProject.model.DTOs.RoomDTO;
 import com.example.finalProject.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,12 @@ public class RoomService {
         return processedRooms;
     }
 
-    public Optional<Room> getRoomById(long id) {
-        return roomRepository.findById(id);
+    public Room getRoomById(long id) {
+        Optional<Room> roomOptional = roomRepository.findById(id);
+        if (roomOptional.isEmpty()) {
+            throw new IllegalArgumentException("Room not found for ID: " + id);
+        }
+        return roomOptional.get();
     }
 
     public List<Room> getRoomByName(String name) {
@@ -48,8 +53,12 @@ public class RoomService {
     }
 
     public void deleteRoom(long id) {
+        if (!roomRepository.existsById(id)) {
+            throw new IllegalArgumentException("Room not found for ID: " + id);
+        }
         roomRepository.deleteById(id);
     }
+
 
     public void addRoom(Room room) {
         String roomName = room.getName().toLowerCase();
