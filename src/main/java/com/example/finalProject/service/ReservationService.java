@@ -123,6 +123,7 @@ public class ReservationService {
 
     public void replaceReservation(long id, Reservation newReservation) {
         Optional<Reservation> existingReservationOptional = reservationRepository.findById(id);
+
         if (existingReservationOptional.isEmpty()) {
             throw new IllegalArgumentException("Reservation does not exist with id: " + id);
         }
