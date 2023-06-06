@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  app:
+    image: 'final:latest'
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: aplikacja
+    restart: always
+    depends_on:
+      - postgresql
+    ports:
+      - 8080:8080
+    networks:
+      - app-net
+
+  postgresql:
+    image: postgres:alpine
+    container_name: backend
+    restart: always
+    ports:
+      - "5433:5432"
+    networks:
+      - app-net
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Debussy321
+
+networks:
+  app-net:
+    driver: bridge

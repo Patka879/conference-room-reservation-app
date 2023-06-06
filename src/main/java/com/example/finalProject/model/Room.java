@@ -1,17 +1,18 @@
 package com.example.finalProject.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
+import jakarta.validation.constraints.Min;
+
 
 import java.util.List;
 
 @Entity
-@Table(name="room")
+@Table(name = "room")
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -32,9 +33,11 @@ public class Room {
     private boolean availability;
 
     @NotNull(message = "Number of sitting places is required")
+    @Min(value = 0, message = "Number of sitting places must be greater than or equal to zero")
     private Integer numberOfSittingPlaces;
 
     @NotNull(message = "Number of standing places is required")
+    @Min(value = 0, message = "Number of standing places must be greater than or equal to zero")
     private Integer numberOfStandingPlaces;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
