@@ -41,28 +41,28 @@ public class OrganizationTests {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
-//    @Ignore
-//    @Test
-//    public void organizationNameBlankShouldCauseTwoViolations() {
-//        Organization organization = new Organization();
-//        organization.setId(1);
-//        organization.setName("");
-//
-//        Set<ConstraintViolation<Organization>> violations = validator.validate(organization);
-//
-//        assertEquals(2, violations.size());
-//
-//        List<String> expectedMessages = Arrays.asList(
-//                "wielkość musi należeć do zakresu od 2 do 20",
-//                "Conference room name is required"
-//        );
-//
-//        for (ConstraintViolation<Organization> violation : violations) {
-//            String actualMessage = violation.getMessage();
-//            System.out.println("Actual violation message: " + actualMessage);
-//            assertTrue(expectedMessages.contains(actualMessage));
-//        }
-//    }
+
+    @Test
+    public void organizationNameBlankShouldCauseTwoViolations() {
+        Organization organization = new Organization();
+        organization.setId(1);
+        organization.setName("");
+
+        Set<ConstraintViolation<Organization>> violations = validator.validate(organization);
+
+        assertEquals(2, violations.size());
+
+        List<String> expectedMessages = Arrays.asList(
+                "wielkość musi należeć do zakresu od 2 do 20",
+                "Conference room name is required"
+        );
+
+        for (ConstraintViolation<Organization> violation : violations) {
+            String actualMessage = violation.getMessage();
+            System.out.println("Actual violation message: " + actualMessage);
+            assertTrue(expectedMessages.contains(actualMessage));
+        }
+    }
 
 //    @Ignore
 //    @Test
