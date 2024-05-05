@@ -1,6 +1,6 @@
 FROM openjdk:17-alpine
 
-COPY ..
+COPY . .
 
 RUN mvn install
 
