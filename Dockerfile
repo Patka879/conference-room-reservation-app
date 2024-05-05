@@ -6,8 +6,6 @@ RUN mvn install
 
 RUN ls -la ./
 
-COPY /target/finalProject-0.0.1-SNAPSHOT.jar finalProject.jar
-
-ENTRYPOINT ["java", "-jar" ,"finalProject.jar"]
+ENTRYPOINT ["java", "-jar" ,"./target/finalProject-0.0.1-SNAPSHOT.jar"]
 
 EXPOSE 8080
