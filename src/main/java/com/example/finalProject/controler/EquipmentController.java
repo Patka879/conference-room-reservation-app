@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/equipment")
-@CrossOrigin(origins="http://localhost")
+@CrossOrigin(origins="http://patrycjamysiak.pl/bookey")
 public class EquipmentController {
     @Autowired
     EquipmentService equipmentService;

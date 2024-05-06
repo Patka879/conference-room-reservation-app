@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/reservation")
-@CrossOrigin(origins="http://localhost")
+@CrossOrigin(origins="http://patrycjamysiak.pl/bookey")
 public class ReservationController {
     @Autowired
     ReservationService reservationService;
