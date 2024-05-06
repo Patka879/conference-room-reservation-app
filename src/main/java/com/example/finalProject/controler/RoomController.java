@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/room")
-@CrossOrigin(origins = "http://patrycjamysiak.pl/bookey")
+@CrossOrigin(origins = "*")
 public class RoomController {
 
     @Autowired
