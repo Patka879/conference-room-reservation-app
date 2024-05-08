@@ -2,6 +2,7 @@
 # BOOKEY - CONFERENCE ROOM RESERVATION SYSTEM
 ##### Project back-end repository: https://github.com/Patka879/finalProject
 ##### Project front-end repository: https://github.com/Patka879/finalProjectFrontend
+##### Demo available at: http://patrycjamysiak.pl/bookey
 
 
 ## Table of contents
@@ -213,9 +214,9 @@ docker run -p 8080:8080 backend
 ```
 $ git clone from https://github.com/Patka879/finalProject
 ```
-Frontend and follow the setup instructions provided in its README file.
+Go to frontend repository and follow the setup instructions provided in its README file.
 
-That's it! You should now have the back-end of the Booker - Conference Room Reservation System project set up and running.
+That's it! You should now have the back-end of the Bookey - Conference Room Reservation System project set up and running.
 
 ## Author
 [@Patrycja Mysiak](https://github.com/Patka879)
